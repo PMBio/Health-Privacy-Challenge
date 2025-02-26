@@ -17,10 +17,11 @@ generator_classes = {
     'dpcvae': ('models.cvae', 'CVAEDataGenerationPipeline'),
     "ctgan": ('models.sdv_ctgan', 'CTGANDataGenerationPipeline'),
     "dpctgan": ('models.dpctgan', 'DPCTGANDataGenerationPipeline'),
-    "sc_dist": ('models.sc_dist', 'ScDistributionDataGenerator')
+    "sc_dist": ('models.sc_dist', 'ScDistributionDataGenerator'),
+    "sc_dist_sparse": ('models.sc_dist_opt', 'ScDistributionDataGenerator')
 }
 
-## dynamic import to avoid package versioning errors 
+## dynamic import to avoid package versioning errors
 def get_generator_class(generator_name):
     if generator_name in generator_classes:
         module_name, class_name = generator_classes[generator_name]
@@ -42,17 +43,17 @@ def cli():
 def generate_split_indices():
     configfile = "config.yaml"
     config = yaml.safe_load(open(configfile))
-    rdataloader = RealDataLoader(config)    
+    rdataloader = RealDataLoader(config)
     rdataloader.save_split_indices()
 
-## the real data will be split into 5 train/test pairs 
+## the real data will be split into 5 train/test pairs
 ## based on the above generated {dataset_name}_split.yaml
 ## the data will be saved under data_splits/{dataset_name}/real/
 @click.command()
 def generate_data_splits():
     configfile = "config.yaml"
     config = yaml.safe_load(open(configfile))
-    rdataloader = RealDataLoader(config)  
+    rdataloader = RealDataLoader(config)
     # Save dataset
     rdataloader.save_split_data()
 
