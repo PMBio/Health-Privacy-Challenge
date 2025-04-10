@@ -87,6 +87,34 @@ def run_generator(split_no: int, experiment_name: str = None):
         syn_data, syn_lbl = generator.generate()
         generator.save_synthetic_data(syn_data, syn_lbl, experiment_name)
 
+## your synthetic data will be saved accordingly to config.yaml
+## e.g. data_splits/{dataset_name}/synthetic/{generator_name}/{experiment_name}
+## change the corresponding keys in the config.yaml
+@click.command()
+@click.argument('split_no', type=int)
+@click.argument('subtype', type=str)
+@click.argument('num_samples', type=int)
+@click.option('--experiment_name', type=str, default="")
+def run_pretrained_generator_for_type(split_no: int, subtype:str, num_samples:int, experiment_name: str = None):
+    # Load the config file
+    configfile = "config.yaml"
+    config = yaml.safe_load(open(configfile))
+
+    generator_name = config.get('generator_name')
+    GeneratorClass = get_generator_class(generator_name)
+
+    if not GeneratorClass:
+        raise ValueError(f"Unknown generator name: {generator_name}")
+
+    generator = GeneratorClass(config, split_no=split_no)
+
+    if not isinstance(generator, MultivariateDataGenerator):
+        generator.load_from_checkpoint()
+
+
+    syn_data, syn_lbl = generator.generate_for_type(subtype, num_samples)
+    generator.save_synthetic_data(syn_data, syn_lbl, experiment_name)
+
 
 
 ## your synthetic data will be saved accordingly to config.yaml
@@ -126,6 +154,7 @@ def run_singlecell_generator(experiment_name: str = None):
 cli.add_command(generate_data_splits)
 cli.add_command(generate_split_indices)
 cli.add_command(run_generator)
+cli.add_command(run_pretrained_generator_for_type)
 cli.add_command(run_singlecell_generator)
 if __name__ == '__main__':
     cli()

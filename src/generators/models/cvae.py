@@ -166,6 +166,24 @@ class CVAE(nn.Module):
         fake_label = np.concatenate(fake_label)[:n]
 
         return fake_data, fake_label
+    
+    def generate_for_subtype(self, subtype_label: int, num_samples: int = 100, device="cpu"):
+        self.eval()
+
+        # One-hot encode the target label
+        y_onehot = one_hot_embedding(
+            torch.tensor([subtype_label] * num_samples), 
+            num_classes=self.y_dim,
+            device=device
+        )
+
+        z = torch.randn([num_samples, self.z_dim]).to(device)
+        fake_data = self.decode(z, y_onehot).detach().cpu().numpy()
+        fake_label = np.array([subtype_label] * num_samples)
+
+        return fake_data, fake_label
+
+
 
 
 class CVAEDataGenerationPipeline(BaseDataGenerator):
@@ -337,6 +355,8 @@ class CVAEDataGenerationPipeline(BaseDataGenerator):
         self.model.load_state_dict(checkpoint["model_state_dict"])
         self.optimizer.load_state_dict(checkpoint["opt_state_dict"])
 
+
+
     def generate(self):
         print("Generate data.")
 
@@ -353,12 +373,30 @@ class CVAEDataGenerationPipeline(BaseDataGenerator):
         syn_data, syn_labels = self.dset.xy_to_dataframe(syn_data, syn_labels)
         return syn_data, syn_labels
 
+
+    def generate_for_type(self, subtype_label: int, num_samples: int = 100):
+        """
+        Wrapper to generate data for a specific subtype using the trained model.
+        """
+        label_idx = self.dset.label_encoder.transform([subtype_label])[0]
+
+        self.model.eval()
+        syn_data, syn_labels = self.model.generate_for_subtype(
+            subtype_label=label_idx,
+            num_samples=num_samples,
+            device=self.device
+        )
+        return self.dset.xy_to_dataframe(syn_data, syn_labels)
+    
+
+
     def save_synthetic_data(
         self,
         synthetic_features: pd.DataFrame,
         synthetic_labels: pd.DataFrame,
         experiment_name: str = "",
     ):
+        
         BaseDataGenerator.save_synthetic_data(
             self, synthetic_features, synthetic_labels, self.experiment_name
         )

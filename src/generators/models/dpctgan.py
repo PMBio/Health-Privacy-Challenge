@@ -154,6 +154,9 @@ class DPCTGANDataGenerationPipeline(BaseDataGenerator):
             self, synthetic_features, synthetic_labels, self.experiment_name
         )
 
+    def generate_for_type(self):
+        pass
+
 
 @click.command()
 @click.argument("config_path", type=click.Path(exists=True))

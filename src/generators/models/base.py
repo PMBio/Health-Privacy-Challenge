@@ -17,6 +17,11 @@ class AbstractDataGenerator(ABC):
         pass
 
     @abstractmethod
+    def generate_for_type(self):
+        pass
+
+
+    @abstractmethod
     def save_synthetic_data(self, 
                             synthetic_features: pd.DataFrame, 
                             synthetic_labels: pd.DataFrame, 
@@ -77,6 +82,12 @@ class BaseDataGenerator(AbstractDataGenerator):
     def generate(self):
         """Generate synthetic data based on your configuration."""
         pass
+
+    @abstractmethod
+    def generate_for_type(self):
+        """Generate synthetic data per subtype/type based on your configuration."""
+        pass
+
 
     @abstractmethod
     def train(self):
