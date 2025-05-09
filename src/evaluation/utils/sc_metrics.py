@@ -7,7 +7,6 @@ import scipy.sparse
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.spatial.distance import cdist
-from scipy.stats import spearmanr
 from sklearn.model_selection import train_test_split
 from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
@@ -84,49 +83,40 @@ class Statistics:
         check_for_inf_nan(real_data, "Real")
         check_for_inf_nan(synthetic_data, "Synthetic")
 
-        # Normalize both datasets
-        sc.pp.normalize_total(real_data, target_sum=1e4)
-        sc.pp.log1p(real_data)
-
-        sc.pp.normalize_total(synthetic_data, target_sum=1e4)
-        sc.pp.log1p(synthetic_data)
-
-        check_for_inf_nan(real_data, "Real")
-        check_for_inf_nan(synthetic_data, "Synthetic")
-
-        # Identify HVGs
-        combined_adata = real_data.concatenate(synthetic_data)
+        ## Combine real and synthetic
+        combined_adata = real_data.concatenate( 
+            synthetic_data, batch_key="source", batch_categories=["real", "synthetic"]
+            )
         sc.pp.normalize_total(combined_adata, target_sum=1e4)
         sc.pp.log1p(combined_adata)
-        sc.pp.highly_variable_genes(combined_adata, flavor="seurat", n_top_genes=n_hvgs)
 
-        # Subset to HVGs
-        real_hvg = real_data[:, combined_adata.var["highly_variable"]]
-        synth_hvg = synthetic_data[:, combined_adata.var["highly_variable"]]
+        #  Identify HVGs
+        sc.pp.highly_variable_genes(combined_adata, flavor="seurat", n_top_genes=n_hvgs)
+        hvg_mask = combined_adata.var["highly_variable"].index
+        real_hvg = combined_adata[combined_adata.obs["source"] == "real"][:, hvg_mask]
+        synth_hvg = combined_adata[combined_adata.obs["source"] == "synthetic"][:, hvg_mask]
 
         # Convert to dense format
         real_exp = is_sparse(real_hvg)
         synth_exp = is_sparse(synth_hvg)
 
-        # Compute Spearman correlation per gene (HVGs only)
-        scc_values = np.array([
-            stats.spearmanr(real_exp[:, i], synth_exp[:, i], nan_policy='omit')[0] 
-            for i in range(real_exp.shape[1])
-        ])
+        #  Compute mean expression per gene
+        real_means = real_exp.mean(axis=0)
+        synth_means = synth_exp.mean(axis=0)
 
-        # Handle NaNs
-        return np.nanmean(scc_values) if not np.all(np.isnan(scc_values)) else np.nan
+        scc, _ = stats.spearmanr(real_means, synth_means)
+        pcc, _ = stats.pearsonr(real_means, synth_means)
+
+        return scc, pcc
     
 
     def compute_mmd_optimized(self, real_data, synthetic_data, sample_size=20000,
                                n_pca=50, gamma=1.0, n_hvgs=5000):
-        # Ensure both datasets have the same gene order
         np.random.seed(self.random_seed)
         real_data, synthetic_data = real_data[:, synthetic_data.var_names], synthetic_data[:, real_data.var_names]
 
         # Identify HVGs
         combined_adata = real_data.concatenate(synthetic_data)
-
         sc.pp.normalize_total(combined_adata, target_sum=1e4)
         sc.pp.log1p(combined_adata)
         sc.pp.highly_variable_genes(combined_adata, flavor="seurat", n_top_genes=n_hvgs)
@@ -165,6 +155,40 @@ class Statistics:
         K_xy = rbf_kernel(real_pca, synth_pca, gamma=gamma).mean()
 
         return K_xx + K_yy - 2 * K_xy
+    
+
+
+    ## Computing Earth Movers Distance (EMD)
+    def compute_emd(self, real_data, synthetic_data, n_hvgs=5000):
+        real_data = real_data[:, synthetic_data.var_names]
+        synthetic_data = synthetic_data[:, real_data.var_names]
+        check_for_inf_nan(real_data, "Real")
+        check_for_inf_nan(synthetic_data, "Synthetic")
+
+        # Combine and normalize
+        combined_adata = real_data.concatenate(
+            synthetic_data, batch_key="source", batch_categories=["real", "synthetic"]
+        )
+        sc.pp.normalize_total(combined_adata, target_sum=1e4)
+        sc.pp.log1p(combined_adata)
+        sc.pp.highly_variable_genes(combined_adata, flavor="seurat", n_top_genes=n_hvgs)
+        hvgs = combined_adata.var[combined_adata.var['highly_variable']].index
+
+        real_expr = combined_adata[combined_adata.obs["source"] == "real"][:, hvgs].X.toarray()
+        synth_expr = combined_adata[combined_adata.obs["source"] == "synthetic"][:, hvgs].X.toarray()
+
+        emd_values = []
+        for gene_idx in range(len(hvgs)):
+            real_gene = real_expr[:, gene_idx]
+            synth_gene = synth_expr[:, gene_idx]
+
+            emd = stats.wasserstein_distance(real_gene, synth_gene)
+            emd_values.append(emd)
+
+        return np.mean(emd_values)
+    
+
+
 
    
     # Goal: Measure the mixing of real and synthetic cells in a shared space.
@@ -201,7 +225,6 @@ class Statistics:
 
     # Goal: Measure how well real & synthetic cells cluster into the same types.
     def compute_ari(self, real_data, synthetic_data, cell_type_col, n_hvgs=5000):
-        # Ensure both datasets have the same genes
         np.random.seed(self.random_seed)
         real_data = real_data[:, synthetic_data.var_names]
         synthetic_data = synthetic_data[:, real_data.var_names]
@@ -231,8 +254,45 @@ class Statistics:
                                              combined_adata.obs["louvain"])
 
         return ari_real_vs_syn, ari_gt_vs_comb
-
     
+
+
+    def compute_gene_correlation_similarity(self, real_data, synthetic_data, n_hvgs=5000):
+        real_data = real_data[:, synthetic_data.var_names]
+        synthetic_data = synthetic_data[:, real_data.var_names]
+        check_for_inf_nan(real_data, "Real")
+        check_for_inf_nan(synthetic_data, "Synthetic")
+
+        # Combine and normalize
+        combined_adata = real_data.concatenate(
+            synthetic_data, batch_key="source", batch_categories=["real", "synthetic"]
+        )
+        sc.pp.normalize_total(combined_adata, target_sum=1e4)
+        sc.pp.log1p(combined_adata)
+        sc.pp.highly_variable_genes(combined_adata, flavor="seurat", n_top_genes=n_hvgs)
+        hvgs = combined_adata.var[combined_adata.var['highly_variable']].index
+
+        real_expr = combined_adata[combined_adata.obs["source"] == "real"][:, hvgs].X.toarray()
+        synth_expr = combined_adata[combined_adata.obs["source"] == "synthetic"][:, hvgs].X.toarray()
+
+        # Compute gene-gene correlation matrices
+        real_corr, _ = stats.spearmanr(real_expr, axis=0)
+        synth_corr, _ = stats.spearmanr(synth_expr, axis=0)
+
+
+        # Extract upper triangle only (since correlation matrices are symmetric)
+        triu_idx = np.triu_indices_from(real_corr, k=1)
+        real_vals = real_corr[triu_idx]
+        synth_vals = synth_corr[triu_idx]
+
+        # Compute similarity 
+        correlation_of_correlations = np.corrcoef(real_vals, synth_vals)[0, 1]
+
+        return correlation_of_correlations
+
+
+
+
 
 
 class VisualizeClassify:
