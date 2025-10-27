@@ -22,7 +22,7 @@ data_splits/onek1k/
 qrcode/
 src/prepare_data/
 src/generators/utils/prepare_data_master.py
-
+notebooks/
 
 # C extensions
 *.so

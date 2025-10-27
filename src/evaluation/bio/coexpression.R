@@ -20,8 +20,10 @@ hcocena_dir <- args[6]
 bio_res_dir <- file.path(home_dir, "results/bio", dataset_name, generator_name)
 
 real_data_dir <- file.path(home_dir, "data_splits", dataset_name, "real")
-synthetic_data_dir <- file.path(home_dir, "data_splits", dataset_name,
-                                "synthetic", generator_name, param_dir)
+synthetic_data_dir <- file.path(
+  home_dir, "data_splits", dataset_name,
+  "synthetic", generator_name, param_dir
+)
 
 if (!dir.exists(bio_res_dir)) {
   dir.create(bio_res_dir, recursive = TRUE)
@@ -31,11 +33,12 @@ if (!dir.exists(bio_res_dir)) {
 init_object()
 
 # initialize working directory
-init_wd(dir_count_data = FALSE, 
+init_wd(
+  dir_count_data = FALSE,
   dir_annotation = FALSE,
   dir_reference_files = file.path(hcocena_dir, "reference_files/"),
   dir_output = bio_res_dir
-  )
+)
 
 check_dirs()
 init_save_folder(name = param_dir)
@@ -44,8 +47,10 @@ load_data <- function(data_dir,
                       file_prefix,
                       split_no,
                       scaling_params = NULL) {
-  data <- read.csv(file.path(data_dir,
-                    paste0(file_prefix, split_no, ".csv")))
+  data <- read.csv(file.path(
+    data_dir,
+    paste0(file_prefix, split_no, ".csv")
+  ))
   rownames(data) <- paste0("P", seq_len(nrow(data)))
   # Transpose data to switch gene names to rows
   data <- t(data)
@@ -58,22 +63,27 @@ load_data <- function(data_dir,
   }
   data <- as.data.frame(data)
   ## retrieve gene symbols...
-  gene_alias <-  mapIds(org.Hs.eg.db,
-                        keys = as.character(rownames(data)),
-                        column = "SYMBOL",
-                        keytype = "ENSEMBL",
-                        multiVals = "first")
+  gene_alias <- mapIds(org.Hs.eg.db,
+    keys = as.character(rownames(data)),
+    column = "SYMBOL",
+    keytype = "ENSEMBL",
+    multiVals = "first"
+  )
   gene_alias <- as.vector(gene_alias)
-  if (anyNA(rownames(gene_alias))){
+  if (anyNA(rownames(gene_alias))) {
     print("NA in gene names")
-  }else{ rownames(data) <- gene_alias}
+  } else {
+    rownames(data) <- gene_alias
+  }
   return(data)
 }
 
 # Function to load annotations
 load_annotations <- function(data_dir, file_prefix, split_no) {
-  annots <- read.csv(file.path(data_dir,
-                       paste(file_prefix, split_no, ".csv", sep = "")))
+  annots <- read.csv(file.path(
+    data_dir,
+    paste(file_prefix, split_no, ".csv", sep = "")
+  ))
   rownames(annots) <- paste0("P", seq_len(nrow(annots)))
   colnames(annots) <- gsub("Subtype_Selected", "Subtype", colnames(annots))
   colnames(annots) <- gsub("cancer_type", "Subtype", colnames(annots))
@@ -82,7 +92,7 @@ load_annotations <- function(data_dir, file_prefix, split_no) {
   return(annots)
 }
 
-#scaling_params <- read.csv(file.path(real_data_dir, 
+# scaling_params <- read.csv(file.path(real_data_dir,
 #  paste("X_train_scale_params_split_", split_no, ".csv", sep = "")), row.names = 1)
 
 real_data <- load_data(real_data_dir, "X_train_real_split_", split_no)
@@ -92,7 +102,7 @@ real_annots <- load_annotations(real_data_dir, "y_train_real_split_", split_no)
 synthetic_annots <- load_annotations(synthetic_data_dir, "synthetic_labels_split_", split_no)
 synthetic_annots <- synthetic_annots %>% mutate(Subtype = paste0(Subtype, "_syn"))
 
-# Define hococena layers 
+# Define hococena layers
 define_layers(list(
   synthetic = c("synthetic_data", "synthetic_annots"),
   real = c("real_data", "real_annots")
@@ -142,11 +152,11 @@ set_layer_settings(
 run_expression_analysis_1(corr_method = "pearson")
 
 # Plot cut-offs and set cut-off value
-#plot_cutoffs(interactive = TRUE)
+# plot_cutoffs(interactive = TRUE)
 set_cutoff(cutoff_vector = c(0.0, 0.0))
 
 # Plot degree distribution
-#plot_deg_dist()
+# plot_deg_dist()
 
 # run final expression analysis
 run_expression_analysis_2()
@@ -163,87 +173,111 @@ cluster_calculation(
   max_cluster_count_per_gene = 1
 )
 
-plot_cluster_heatmap(cluster_rows = FALSE,
-    file_name = paste0("Heatmap_modules", str(split_no), ".pdf"))
+plot_cluster_heatmap(
+  cluster_rows = FALSE,
+  file_name = paste0("Heatmap_modules", str(split_no), ".pdf")
+)
 
 # Plot the integrated network colored by clusters
 plot_integrated_network()
 
 # Set edges for real data
 edges_real <- hcobject[["layer_specific_outputs"]][[
-    paste0("set", length(hcobject$layers))]][["part2"]][["heatmap_out"]][["filt_cutoff_data"]]
-edges_real <- apply(edges_real, 1, function(x){
-  if(x[1] > x[2]){
+  paste0("set", length(hcobject$layers))
+]][["part2"]][["heatmap_out"]][["filt_cutoff_data"]]
+edges_real <- apply(edges_real, 1, function(x) {
+  if (x[1] > x[2]) {
     paste0(x[1], "_", x[2])
-  }else{
+  } else {
     paste0(x[2], "_", x[1])
   }
 })
 
 coex_rec <- data.frame()
-for(i in 1:length(hcobject$layers)){
+for (i in 1:length(hcobject$layers)) {
   edges <- hcobject[["layer_specific_outputs"]][[
-    paste0("set", i)]][["part2"]][["heatmap_out"]][["filt_cutoff_data"]]
-  edges <- apply(edges, 1, function(x){
-    if(x[1] > x[2]){
+    paste0("set", i)
+  ]][["part2"]][["heatmap_out"]][["filt_cutoff_data"]]
+  edges <- apply(edges, 1, function(x) {
+    if (x[1] > x[2]) {
       paste0(x[1], "_", x[2])
-    }else{
+    } else {
       paste0(x[2], "_", x[1])
     }
   })
   intersec <- length(intersect(edges, edges_real))
-  false_rec <- length(edges)-length(intersect(edges, edges_real))
-  coex_rec <- rbind(coex_rec, data.frame(set = hcobject$layers_names[i], 
-    correctly_rec = intersec, falsely_rec=false_rec, score=intersec/false_rec * false_rec/length(edges_real)))
+  false_rec <- length(edges) - length(intersect(edges, edges_real))
+  coex_rec <- rbind(coex_rec, data.frame(
+    set = hcobject$layers_names[i],
+    correctly_rec = intersec, falsely_rec = false_rec, score = intersec / false_rec * false_rec / length(edges_real)
+  ))
 }
 
-coex_rec <- coex_rec[order(coex_rec$correctly_rec, decreasing = T),]
+coex_rec <- coex_rec[order(coex_rec$correctly_rec, decreasing = T), ]
 coex_rec$set <- factor(coex_rec$set, levels = rev(coex_rec$set))
 reference <- dplyr::filter(coex_rec, set == "real")$correctly_rec
 
-coex_rec_summary <- data.frame(rec = c(mean(dplyr::filter(coex_rec, !set=="real")$correctly_rec), 
-                mean(dplyr::filter(coex_rec, !set=="real")$falsely_rec)),
-                sd = c(sd(dplyr::filter(coex_rec, !set=="real")$correctly_rec), 
-                       sd(dplyr::filter(coex_rec, !set=="real")$falsely_rec)),
-                dir = c("correct", "false"),
-                set = "synthetic")
+coex_rec_summary <- data.frame(
+  rec = c(
+    mean(dplyr::filter(coex_rec, !set == "real")$correctly_rec),
+    mean(dplyr::filter(coex_rec, !set == "real")$falsely_rec)
+  ),
+  sd = c(
+    sd(dplyr::filter(coex_rec, !set == "real")$correctly_rec),
+    sd(dplyr::filter(coex_rec, !set == "real")$falsely_rec)
+  ),
+  dir = c("correct", "false"),
+  set = "synthetic"
+)
 coex_rec_summary$set <- factor(coex_rec_summary$set, levels = c("synthetic", "real"))
-
-
-p <- ggplot(coex_rec_summary, aes(x=set,y=rec, fill=dir))+
-  geom_bar(stat="identity", position=position_dodge())+
-  geom_errorbar(aes(ymin=rec-sd, ymax=rec+sd), width=.2,
-                 position=position_dodge(.9))+
-  scale_fill_manual(values = c("#50c1de", "#ba3061"))+
-  coord_flip()+
-  theme_bw()+
-  geom_hline(yintercept = reference,
-             linewidth=.5, linetype="dashed")+
-  theme(# remove the vertical grid lines
-           panel.grid.major.y  = element_blank(),
-           panel.grid.minor = element_blank(),
-           legend.title=element_blank())+
-  ylab(paste0("coexpressions with r > ", hcobject$cutoff_vec[1]))+
-  xlab("")+
-  ggtitle("Co-Expression Preservation")
-
 
 output_dir <- file.path(bio_res_dir, param_dir)
 if (!dir.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
 }
 
-ggsave(file = file.path(output_dir, paste0("DE_data_split_", split_no, "_coexpressed-genes.png")),
-        bg = "transparent", plot = p, width = 10, height = 6, dpi = 300)
+## save coexpression file
+output_file <- file.path(output_dir, paste0("coexpression_to_plot_", split_no, ".csv"))
+write.csv(coex_rec_summary, paste0(output_file))
+
+
+p <- ggplot(coex_rec_summary, aes(x = set, y = rec, fill = dir)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  geom_errorbar(aes(ymin = rec - sd, ymax = rec + sd),
+    width = .2,
+    position = position_dodge(.9)
+  ) +
+  scale_fill_manual(values = c("#50c1de", "#ba3061")) +
+  coord_flip() +
+  theme_bw() +
+  geom_hline(
+    yintercept = reference,
+    linewidth = .5, linetype = "dashed"
+  ) +
+  theme( # remove the vertical grid lines
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    legend.title = element_blank()
+  ) +
+  ylab(paste0("coexpressions with r > ", hcobject$cutoff_vec[1])) +
+  xlab("") +
+  ggtitle("Co-Expression Preservation")
+
+
+
+ggsave(
+  file = file.path(output_dir, paste0("DE_data_split_", split_no, "_coexpressed-genes.png")),
+  bg = "transparent", plot = p, width = 10, height = 6, dpi = 300
+)
 
 # Perform functional enrichment analysis
-#functional_enrichment(
+# functional_enrichment(
 #  gene_sets = c("Hallmark", "Go", "Kegg"),
 #  clusters = "all",
 #  top = 5,
 #  padj = "BH",
 # qval = 0.1
-#)
+# )
 
 # Transcription factor enrichment analysis
-#TF_overrep_module(clusters = "all", topTF = 5, topTarget = 5)
+# TF_overrep_module(clusters = "all", topTF = 5, topTarget = 5)
