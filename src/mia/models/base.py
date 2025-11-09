@@ -27,7 +27,7 @@ class BaseMIAModel(ABC):
         self.config = config
         self.home_dir = config["dir_list"]["home"]
         #self.results_dir = config["dir_list"]["mia_files"]
-        self.generator_model = self.config["generator_config"]["model_name"]
+        self.generator_model = self.config["generator_config"]["name"]
         self.experiment_name = self.config["generator_config"]["experiment_name"]
         self.attack_model =  self.config["attack_model"]
         self.dataset_config = config["dataset_config"]
@@ -72,8 +72,10 @@ class BaseMIAModel(ABC):
         for method_name, score in scores.items():
             # compute metrics for each method
             #acc, fpr, tpr, threshold, auc, ap = self._compute_metrics(score, labels)
+            print(method_name)
             (acc_median, acc_best, fpr, tpr, threshold, auc, ap, pr_auc,
-            f1_median, f1_best, tpr_at_fpr_001, tpr_at_fpr_01) = self._compute_metrics(score, labels)
+            f1_median, f1_best, tpr_at_fpr_001, tpr_at_fpr_01, 
+            precision_5pct, k, tp_count) = self._compute_metrics(score, labels)
 
 
             
@@ -88,10 +90,10 @@ class BaseMIAModel(ABC):
                 "pr_auc": pr_auc,
                 "f1_median": f1_median,
                 "f1_best": f1_best,
+                "tpr_at_fpr_01": tpr_at_fpr_01,
                 "tpr_at_fpr_001": tpr_at_fpr_001,
-                "tpr_at_fpr_01": tpr_at_fpr_01
-
-
+                "precision@5pt": precision_5pct,
+                "tp_count": tp_count
                 #"fpr": fpr.tolist(),
                 #"tpr": tpr.tolist(),
                 #"threshold": threshold.tolist() 
@@ -123,6 +125,23 @@ class BaseMIAModel(ABC):
 
 
     @staticmethod
+    def compute_precision_top_percent(y_true, scores, top_percent=5):
+        """
+        Compute Precision@top_percent.
+        - y_true: 1=member, 0=non-member
+        - scores: continuous attack scores (higher -> more likely member)
+        - top_percent: percentage of candidates to consider
+        Returns: precision (fraction of true members in top candidates)
+        """
+        n_candidates = len(scores)
+        k = max(1, int(np.ceil(n_candidates * top_percent / 100)))  # ensure at least 1
+        top_idx = np.argsort(scores)[-k:][::-1]  # indices of top-k scores
+        top_members = y_true[top_idx].sum()
+        precision = top_members / k
+        return precision, k, top_members
+
+
+    @staticmethod
     def _compute_metrics(
                 y_scores: np.ndarray, 
                 y_true: np.ndarray, 
@@ -131,13 +150,14 @@ class BaseMIAModel(ABC):
 
         # compute F1 for multiple thresholds
         thresholds = np.sort(np.unique(y_scores))
-        if len(thresholds) < 2:
-                raise ValueError("Not enough unique prediction scores..")
-            
-        f1_scores = [f1_score(y_true, y_scores > t, sample_weight=sample_weight) 
+        if len(thresholds) >= 2:
+            f1_scores = [f1_score(y_true, y_scores > t, sample_weight=sample_weight) 
                      for t in thresholds]
-        best_threshold = thresholds[np.argmax(f1_scores)]
-        y_pred_best = y_scores > best_threshold
+            best_threshold = thresholds[np.argmax(f1_scores)]
+            y_pred_best = y_scores > best_threshold
+        else:
+            y_pred_best = y_scores > np.median(y_scores)
+            
 
         ## compare the accuracy and f1 computed with best_threshold vs median 
         acc_median = accuracy_score(y_true, y_pred_median, sample_weight=sample_weight)
@@ -155,12 +175,28 @@ class BaseMIAModel(ABC):
         tpr_at_fpr_001 = tpr[(fpr >= 0.01).argmax()]
         tpr_at_fpr_01 = tpr[(fpr >= 0.1).argmax()]
 
+        idx = (fpr >= 0.01).argmax()
+        threshold_at_fpr = threshold[idx]
+        print("Threshold used for FPR=0.01:", threshold_at_fpr)
+
+        pred_labels = (y_scores >= threshold_at_fpr).astype(int)
+        tp_indices = np.where((pred_labels == 1) & (y_true == 1))[0]
+        fp_indices = np.where((pred_labels == 1) & (y_true == 0))[0]
+        print("TP count:", len(tp_indices), "FP count:", len(fp_indices))
+
+        precision_5pct, k, tp_count = BaseMIAModel.compute_precision_top_percent(
+                                            y_true, 
+                                            y_scores, 
+                                            top_percent=5)
+
+
         f1_median = f1_score(y_true, y_pred_median, sample_weight=sample_weight) 
         f1_best= f1_score(y_true, y_pred_best, sample_weight=sample_weight) 
 
         #return acc, fpr, tpr, threshold, auc, ap
         return (acc_median, acc_best, fpr, tpr, threshold, 
-                auc_sc, ap, pr_auc, f1_median, f1_best, tpr_at_fpr_001, tpr_at_fpr_01)
+                auc_sc, ap, pr_auc, f1_median, f1_best, tpr_at_fpr_001, tpr_at_fpr_01,
+                precision_5pct, k, tp_count)
     
 
 

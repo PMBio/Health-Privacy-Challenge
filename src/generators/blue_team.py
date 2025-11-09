@@ -15,9 +15,11 @@ generator_classes = {
     'multivariate': ('models.multivariate', 'MultivariateDataGenerator'),
     'cvae': ('models.cvae', 'CVAEDataGenerationPipeline'),
     'dpcvae': ('models.cvae', 'CVAEDataGenerationPipeline'),
-    "ctgan": ('models.sdv_ctgan', 'CTGANDataGenerationPipeline'),
-    "dpctgan": ('models.dpctgan', 'DPCTGANDataGenerationPipeline'),
-    "sc_dist": ('models.sc_dist', 'ScDistributionDataGenerator')
+    'ctgan': ('models.sdv_ctgan', 'CTGANDataGenerationPipeline'),
+    'dpctgan': ('models.dpctgan', 'DPCTGANDataGenerationPipeline'),
+    'sc_dist': ('models.sc_dist', 'ScDistributionDataGenerator'),
+    'cvae_gmm': ('models.cvae_gmm', 'CVAEGMMDataGenerator'),
+    'wgan_gp': ('models.wgan_gp', 'WGANGPDataGenerator')
 }
 
 ## dynamic import to avoid package versioning errors 

@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import StandardScaler
+
 
 class MIADataLoader:
     def __init__(self, 
@@ -20,8 +22,30 @@ class MIADataLoader:
 
     def load_synthetic_data(self):
         synthetic_data = pd.read_csv(self.synthetic_file).values
+        synthetic_data = StandardScaler().fit_transform(synthetic_data)
 
-        return synthetic_data
+        synthetic_labels_file = self.synthetic_file.replace("_data_", "_labels_")
+        synthetic_labels = pd.read_csv(synthetic_labels_file)
+
+        return synthetic_data, synthetic_labels
+    
+
+    
+    def load_original_data(self, save_dir, dataset_name):
+        # get split num
+        split_num = self.synthetic_file.split("_")[-1].split(".")[0]
+        print(split_num)
+        real_save_dir = os.path.join(save_dir, dataset_name, "real")
+        original_data = pd.read_csv(os.path.join(
+            real_save_dir, f"X_train_real_split_{split_num}.csv")).values
+
+        original_data = StandardScaler().fit_transform(original_data)
+        original_labels = pd.read_csv(os.path.join(
+            real_save_dir, f"y_train_real_split_{split_num}.csv"))
+
+        print(original_data.shape)
+
+        return original_data, original_labels
     
     
     def load_membership_dataset(self):
@@ -30,6 +54,8 @@ class MIADataLoader:
         dataset = pd.read_csv(self.membership_test_file, 
                                          sep="\t", 
                                          index_col=0).T.values
+        
+        dataset = StandardScaler().fit_transform(dataset)
         
         print(f"Membership test set is loaded. Size {dataset.shape}")
         return dataset
@@ -51,7 +77,9 @@ class MIADataLoader:
             reference = pd.read_csv(self.reference_file, 
                                          sep="\t", 
                                          index_col=0).T
+            
             #print(reference.head())
+            reference = StandardScaler().fit_transform(reference)
             return reference
         else:
             return None

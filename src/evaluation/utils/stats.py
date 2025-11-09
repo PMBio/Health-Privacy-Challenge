@@ -54,6 +54,40 @@ class Statistics:
         overlap = features_synthetic & features_real
         overlap_proportion = len(overlap) / len(features_synthetic) if len(features_synthetic) > 0 else 0
         return len(overlap), np.round(overlap_proportion, 4)
+    
+
+    @staticmethod
+    def compute_kl_divergences(X_synthetic, X_real, n_bins=50):
+        """
+        Compute KL divergences for each feature using binning
+        """
+        kl_divergences = []
+        
+        for i in range(X_real.shape[1]):
+            # Create common bins based on real data range
+            feature_min = min(np.min(X_real[:, i]), np.min(X_synthetic[:, i]))
+            feature_max = max(np.max(X_real[:, i]), np.max(X_synthetic[:, i]))
+            bins = np.linspace(feature_min, feature_max, n_bins)
+            
+            # Compute histograms
+            hist_real, _ = np.histogram(X_real[:, i], bins=bins, density=True)
+            hist_synthetic, _ = np.histogram(X_synthetic[:, i], bins=bins, density=True)
+            
+            # Add small epsilon to avoid log(0)
+            epsilon = 1e-10
+            hist_real = hist_real + epsilon
+            hist_synthetic = hist_synthetic + epsilon
+            
+            # Normalize to ensure they sum to 1
+            hist_real = hist_real / np.sum(hist_real)
+            hist_synthetic = hist_synthetic / np.sum(hist_synthetic)
+            
+            # Compute KL divergence
+            kl_div = np.sum(hist_real * np.log(hist_real / hist_synthetic))
+            kl_divergences.append(kl_div)
+
+        
+        return np.mean(kl_divergences), np.std(kl_divergences)
 
 
     

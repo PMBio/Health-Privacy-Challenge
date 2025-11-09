@@ -17,6 +17,9 @@ dataset_name <- args[3]
 generator_name <- args[4]
 param_dir <- args[5]
 hcocena_dir <- args[6]
+cutoff <- args[7]
+### this is co-expression cutoff
+
 bio_res_dir <- file.path(home_dir, "results/bio", dataset_name, generator_name)
 
 real_data_dir <- file.path(home_dir, "data_splits", dataset_name, "real")
@@ -143,7 +146,7 @@ set_global_settings(
 # Set layer-specific settings
 set_layer_settings(
   top_var = c("all", "all"),
-  min_corr = rep(0.0, length(hcobject[["layers"]])),
+  min_corr = rep(cutoff, length(hcobject[["layers"]])),
   range_cutoff_length = rep(100, length(hcobject[["layers"]])),
   print_distribution_plots = rep(FALSE, length(hcobject[["layers"]]))
 )
@@ -153,7 +156,7 @@ run_expression_analysis_1(corr_method = "pearson")
 
 # Plot cut-offs and set cut-off value
 # plot_cutoffs(interactive = TRUE)
-set_cutoff(cutoff_vector = c(0.0, 0.0))
+set_cutoff(cutoff_vector = c(cutoff, cutoff))
 
 # Plot degree distribution
 # plot_deg_dist()
@@ -236,8 +239,12 @@ if (!dir.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
 }
 
+
 ## save coexpression file
-output_file <- file.path(output_dir, paste0("coexpression_to_plot_", split_no, ".csv"))
+output_file <- file.path(
+  output_dir,
+  paste0("coexpr_cutoff=", cutoff, "_split_", split_no, ".csv")
+)
 write.csv(coex_rec_summary, paste0(output_file))
 
 
@@ -265,10 +272,13 @@ p <- ggplot(coex_rec_summary, aes(x = set, y = rec, fill = dir)) +
 
 
 
-ggsave(
-  file = file.path(output_dir, paste0("DE_data_split_", split_no, "_coexpressed-genes.png")),
-  bg = "transparent", plot = p, width = 10, height = 6, dpi = 300
-)
+# ggsave(
+#  file = file.path(
+#    output_dir,
+#    paste0("coexpr-cutoff=", cutoff, "_split_", split_no, ".png")
+#  ),
+#  bg = "transparent", plot = p, width = 10, height = 6, dpi = 300
+# )
 
 # Perform functional enrichment analysis
 # functional_enrichment(

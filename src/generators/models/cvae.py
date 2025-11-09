@@ -22,8 +22,9 @@ from generators.models.base import BaseDataGenerator
 # the script sometimes get abruptly killed without this
 # it may be driver specific and as such, this case may not apply to you.
 if torch.cuda.is_available:
-    print(torch.cuda.is_available)
+    print(torch.cuda.is_available())
     torch.cuda.current_device()
+    _ = torch.tensor([0.], device='cuda')  # force context init
 
 
 @click.group()
@@ -32,13 +33,22 @@ def cli():
 
 
 class CVAE(nn.Module):
-    def __init__(self, x_dim, y_dim, z_dim, beta=1, transform="none"):
+    def __init__(self, x_dim, y_dim, z_dim, beta=1, transform="none", condition_type="onehot", disease_embed_dim=20):
         super(CVAE, self).__init__()
         self.x_dim = x_dim
         self.y_dim = y_dim
         self.z_dim = z_dim
         self.beta = beta
         self.transform = transform
+        self.condition_type = condition_type
+        self.disease_embed_dim = disease_embed_dim
+
+        if condition_type == "embedding":
+            self.disease_embedding = nn.Embedding(y_dim, disease_embed_dim)
+            y_input_dim = disease_embed_dim
+        else:
+            y_input_dim = y_dim
+
 
         self.fc_feat_x = nn.Sequential(
             nn.Linear(x_dim, 1000),
@@ -48,13 +58,13 @@ class CVAE(nn.Module):
             nn.Linear(512, 256),
             nn.ReLU(),
         )
-        self.fc_feat_y = nn.Sequential(nn.Linear(y_dim, 256), nn.ReLU())
+        self.fc_feat_y = nn.Sequential(nn.Linear(y_input_dim, 256), nn.ReLU())
         self.fc_feat_all = nn.Sequential(nn.Linear(512, 512), nn.ReLU())
         self.fc_mu = nn.Linear(512, z_dim)
         self.fc_logvar = nn.Linear(512, z_dim)
 
         self.dec_z = nn.Sequential(nn.Linear(z_dim, 256), nn.ReLU())
-        self.dec_y = nn.Sequential(nn.Linear(y_dim, 256), nn.ReLU())
+        self.dec_y = nn.Sequential(nn.Linear(y_input_dim, 256), nn.ReLU())
         self.dec = nn.Sequential(
             nn.Linear(512, 512),
             nn.ReLU(),
@@ -80,6 +90,8 @@ class CVAE(nn.Module):
             self.decoder_params = self.decoder_params + list(layer.parameters())
 
     def forward(self, x, y):
+        #print("Inside forward..")
+        #y_vec = self._encode_condition(y)
         mu, logvar = self.encode(x, y)
         out = self.decode(self.reparameterize(mu, logvar), y)
 
@@ -116,6 +128,9 @@ class CVAE(nn.Module):
     def encode(self, x, y):
         feat_x = self.fc_feat_x(x)
         feat_y = self.fc_feat_y(y)
+        #print("inside encode")
+        #print(y.shape, feat_y.shape)
+
         feat = torch.cat([feat_x, feat_y], dim=1)
         feat = self.fc_feat_all(feat)
 
@@ -131,13 +146,37 @@ class CVAE(nn.Module):
 
         if self.transform == "exp":
             out = out.exp()
-        elif self.transform == "tahn":
+        elif self.transform == "tanh":
             out = torch.tahn(out)
         elif self.transform == "sigmoid":
             out = torch.sigmoid(out)
         elif self.transform == "relu":
             out = torch.nn.ReLU()(out)
         return out
+    
+
+    def _encode_condition(self, y):
+        #print("inside encode_condition")
+        #print(y.shape)
+            # if y is one-hot (2D with second dim == y_dim), convert to indices
+        if y.dim() == 2 and y.size(1) == self.y_dim and self.condition_type != "embedding":
+            y = y.argmax(dim=1)  # [batch]
+        
+        y = y.long()
+
+        if self.condition_type == "embedding":
+            y = y.to(next(self.parameters()).device)  
+            y_vec = self.disease_embedding(y) #.long()
+        else:
+            #y_vec = nn.functional.one_hot(y.long(), num_classes=self.y_dim).float()
+            y_vec = one_hot_embedding(y, num_classes=self.y_dim, device=next(self.parameters()).device)
+
+        # flatten out any stray singleton dimensions
+        #print(y_vec.shape)
+
+        return y_vec.to(next(self.parameters()).device) 
+
+        
 
     def sample(self, n, data_loader, uniform_y=False, device="cpu"):
         """Returns (fake_data, fake_label) samples."""
@@ -156,7 +195,10 @@ class CVAE(nn.Module):
                     z = torch.randn([data_x.shape[0], self.z_dim]).to(device)
                     if uniform_y:
                         data_y = torch.randint(0, self.y_dim, [data_x.shape[0]])
-                    y = one_hot_embedding(data_y, num_classes=self.y_dim, device=device)
+                    #y = one_hot_embedding(data_y, num_classes=self.y_dim, device=device)
+                    #print("inside training...")
+                    y = self._encode_condition(data_y.to(device))
+
                 fake_data.append(self.decode(z, y).detach().cpu().numpy())
                 fake_label.append(data_y.cpu().numpy())
 
@@ -171,14 +213,14 @@ class CVAE(nn.Module):
         self.eval()
 
         # One-hot encode the target label
-        y_onehot = one_hot_embedding(
-            torch.tensor([subtype_label] * num_samples), 
-            num_classes=self.y_dim,
-            device=device
-        )
-
+        #y_onehot = one_hot_embedding(
+        #    torch.tensor([subtype_label] * num_samples), 
+        #    num_classes=self.y_dim,
+        #    device=device
+        #)
+        y_vec = self._encode_condition(y_vec)
         z = torch.randn([num_samples, self.z_dim]).to(device)
-        fake_data = self.decode(z, y_onehot).detach().cpu().numpy()
+        fake_data = self.decode(z, y_vec).detach().cpu().numpy()
         fake_label = np.array([subtype_label] * num_samples)
 
         return fake_data, fake_label
@@ -210,11 +252,18 @@ class CVAEDataGenerationPipeline(BaseDataGenerator):
         self.if_uniform_y = self.args["generation_config"]["uniform_y"]
         self.n_synth_samples = self.args["generation_config"]["n_synth_samples"]
 
+        self.condition_type = self.args['model_config'].get('condition_type', 'onehot')
+        self.disease_embed_dim = self.args.get('disease_embed_dim', 20)
+
+
         if self.generator_name == "cvae":
-            self.experiment_name = f'pp_{self.preprocess}-bs_{self.batch_size}-iters_{self.num_iters}-beta_{self.args["model_config"]["beta"]}'
+            self.experiment_name = f'pp_{self.preprocess}-bs_{self.batch_size}-iters_{self.num_iters}-beta_{self.args["model_config"]["beta"]}-type={self.condition_type}'
             self.enable_privacy = False
         elif self.generator_name == "dpcvae":
-            self.experiment_name = f'pp_{self.preprocess}-bs_{self.batch_size}-iters_{self.num_iters}-beta_{self.args["model_config"]["beta"]}-eps_{self.args["privacy_config"]["target_epsilon"]}-clip_{self.args["privacy_config"]["max_norm"]}'
+            self.experiment_name = (
+                f'pp_{self.preprocess}-bs_{self.batch_size}-iters_{self.num_iters}-beta_{self.args["model_config"]["beta"]}'
+                f'-type={self.condition_type}-eps_{self.args["privacy_config"]["target_epsilon"]}-clip_{self.args["privacy_config"]["max_norm"]}'
+                )
             self.enable_privacy = True
         else:
             raise NotImplementedError
@@ -269,6 +318,8 @@ class CVAEDataGenerationPipeline(BaseDataGenerator):
             z_dim=self.z_dim,
             beta=self.beta,
             transform=self.transform,
+            condition_type=self.condition_type,
+            disease_embed_dim=self.disease_embed_dim
         ).to(self.device)
 
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
@@ -302,10 +353,13 @@ class CVAEDataGenerationPipeline(BaseDataGenerator):
         for ep in range(num_epochs):
             for data_x, data_y in data_loader:
                 iters += 1
+                #print(">>> loop: data_x device:", data_x.device, " data_y type:", type(data_y), " data_y device (if tensor):", getattr(data_y, 'device', None), " data_y shape:", getattr(data_y, 'shape', None))
+
                 data_x = data_x.to(self.device)
-                data_y = one_hot_embedding(
-                    data_y, num_classes=y_dim, device=self.device
-                )
+                if self.enable_privacy:
+                    data_y = self.model._module._encode_condition(data_y)
+                else:
+                    data_y = self.model._encode_condition(data_y)
 
                 self.model.train()
                 self.model.zero_grad()

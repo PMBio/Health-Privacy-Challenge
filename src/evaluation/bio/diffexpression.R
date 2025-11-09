@@ -8,13 +8,14 @@ library(ggplot2)
 # Towards Biologically Plausible and Private Gene Expression Data Generation
 # Chen, Oestreich, & Afonja et al. 2024
 
-args <- commandArgs(trailingOnly <- TRUE)
+args <- commandArgs(trailingOnly = TRUE)
 home_dir <- args[1]
 split_no <- as.integer(args[2])
 dataset_name <- args[3]
 generator_name <- args[4]
 param_dir <- args[5]
 p_value_th <- as.double(args[6])
+lfc_th <- as.double(args[7])
 
 real_data_dir <- file.path(home_dir, "data_splits", dataset_name, "real")
 synthetic_data_dir <- file.path(
@@ -110,14 +111,17 @@ for (i in 1:length(datasets)) {
   current_counts[is.na(current_counts)] <- 0
   current_groups <- annotations[[i]][[anno_colname_class]]
 
+  # TODO: might add this to snakemake with lfc=0 and 0.5
   up <- scran::pairwiseWilcox(current_counts,
     groups = current_groups,
-    direction = "up"
+    direction = "up",
+    lfc = lfc_th
   )
 
   down <- scran::pairwiseWilcox(current_counts,
     groups = current_groups,
-    direction = "down"
+    direction = "down",
+    lfc = lfc_th
   )
 
   # Process the pairs and filter significant genes
@@ -215,48 +219,69 @@ for (i in 1:length(dataset_names)) {
   # Iterate over each unique comparison
   for (j in unique_comparisons) {
     # Upregulated genes
-    P <- DE_genes[[set1]][[j]][["up"]]
-    TP <- intersect(
-      DE_genes[[set1]][[j]][["up"]],
-      DE_genes[[set2]][[j]][["up"]]
-    )
-    FP <- base::setdiff(
-      DE_genes[[set1]][[j]][["up"]],
-      DE_genes[[set2]][[j]][["up"]]
-    )
 
+    # 'set1' = synthetic, 'set2' = real (the ground truth)
+    # ------------------------------------------------------
 
-    N <- base::setdiff(
-      rownames(real_data),
-      DE_genes[[set1]][[j]][["up"]]
-    )
-    FN <- N[N %in% DE_genes[[set2]][[j]][["up"]]]
-    TN <- N[!N %in% FN]
+    # 1. True "positive" genes (real upregulated)
+    P <- DE_genes[[set2]][[j]][["up"]]
+    # All genes real says are up
+
+    # 2. True "negative" genes (real NOT upregulated)
+    N <- base::setdiff(rownames(real_data), P)
+    # Everything else that real says is *not* up
+
+    # 3. Predicted positives (synthetic upregulated)
+    pred_up <- DE_genes[[set1]][[j]][["up"]]
+    # Synthetic’s guesses.
+
+    # 4. True Positives (TP): real up + predicted up
+    TP <- intersect(pred_up, P)
+
+    # 5. False Positives (FP): synthetic said up, real said not up
+    FP <- base::setdiff(pred_up, P)
+
+    # 6. False Negatives (FN): real up, synthetic missed them
+    FN <- base::setdiff(P, pred_up)
+
+    # 7. True Negatives (TN): not up in real, not up in synthetic
+    TN <- base::setdiff(N, pred_up)
 
     # Calculate True Positive Rate (TPR) and False Positive Rate (FPR)
     TPR_up <- length(TP) / (length(TP) + length(FN))
     FPR_up <- length(FP) / (length(FP) + length(TN))
 
+
     # Downregulated genes (similarly)
-    P <- DE_genes[[set1]][[j]][["down"]]
-    TP <- intersect(
-      DE_genes[[set1]][[j]][["down"]],
-      DE_genes[[set2]][[j]][["down"]]
-    )
-    FP <- base::setdiff(
-      DE_genes[[set1]][[j]][["down"]],
-      DE_genes[[set2]][[j]][["down"]]
-    )
+    # 1. True "positive" genes (real downregulated)
+    P <- DE_genes[[set2]][[j]][["down"]]
+    # All genes real says are down.
 
-    N <- base::setdiff(
-      rownames(real_data),
-      DE_genes[[set1]][[j]][["down"]]
-    )
-    FN <- N[N %in% DE_genes[[set2]][[j]][["down"]]]
-    TN <- N[!N %in% FN]
+    # 2. True "negative" genes (real NOT dowregulated)
+    N <- base::setdiff(rownames(real_data), P)
+    # Everything else that real says is *not* down
 
+    # 3. Predicted positives (synthetic downregulated)
+    pred_down <- DE_genes[[set1]][[j]][["down"]]
+    # Synthetic’s guesses.
+
+    # 4. True Positives (TP): real down + predicted down
+    TP <- intersect(pred_down, P)
+
+    # 5. False Positives (FP): synthetic said down, real said not down
+    FP <- base::setdiff(pred_down, P)
+
+    # 6. False Negatives (FN): real down, synthetic missed them
+    FN <- base::setdiff(P, pred_down)
+
+    # 7. True Negatives (TN): not down in real, not down in synthetic
+    TN <- base::setdiff(N, pred_down)
+
+    # Calculate True Positive Rate (TPR) and False Positive Rate (FPR)
     TPR_down <- length(TP) / (length(TP) + length(FN))
     FPR_down <- length(FP) / (length(FP) + length(TN))
+
+    ####
 
     DE_TP[[comp]][["up"]] <- append(DE_TP[[comp]][["up"]], c(TPR_up))
     DE_TP[[comp]][["down"]] <- append(DE_TP[[comp]][["down"]], c(TPR_down))
@@ -304,7 +329,7 @@ if (!dir.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
 }
 
-output_file <- file.path(output_dir, paste0("DE_data_split_", split_no))
+output_file <- file.path(output_dir, paste0("DE_lfc=", lfc_th, "_split_", split_no))
 write.csv(plot_fpr, paste0(output_file, "_fpr.csv"))
 write.csv(plot_tpr, paste0(output_file, "_tpr.csv"))
 
@@ -327,20 +352,20 @@ for (n in names(DE_correct)) {
 plot_df <- dplyr::filter(plot_df, !comparison %in% c("real up", "real down"))
 
 
-p <- ggplot() +
-  geom_boxplot(data = plot_df, aes(x = comparison, y = correct, fill = direction)) +
-  theme_bw() +
-  ylim(c(0, 1)) +
-  scale_fill_manual(values = rep(
-    c("#999999", "#e3e3e3"),
-    2 * length(datasets)
-  )) + # hcobject$layers_names
-  ggtitle(paste0("DE-Gene Preservation, split=", split_no)) +
-  theme(axis.text.x = element_text(angle = 90)) +
-  ylab("Correctly reconstructed DE genes \n across class comparisons [%]") +
-  xlab("")
+# p <- ggplot() +
+#  geom_boxplot(data = plot_df, aes(x = comparison, y = correct, fill = direction)) +
+#  theme_bw() +
+#  ylim(c(0, 1)) +
+#  scale_fill_manual(values = rep(
+#    c("#999999", "#e3e3e3"),
+#    2 * length(datasets)
+#  )) + # hcobject$layers_names
+#  ggtitle(paste0("DE-Gene Preservation, split=", split_no)) +
+#  theme(axis.text.x = element_text(angle = 90)) +
+#  ylab("Correctly reconstructed DE genes \n across class comparisons [%]") +
+#  xlab("")
 
-ggsave(
-  file = paste0(output_file, "_DE-genes.png"), bg = "transparent",
-  plot = p, width = 10, height = 6, dpi = 300
-)
+# ggsave(
+#  file = paste0(output_file, "_DE-genes.png"), bg = "transparent",
+#  plot = p, width = 10, height = 6, dpi = 300
+# )
