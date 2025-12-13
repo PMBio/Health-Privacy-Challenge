@@ -58,6 +58,7 @@ class DOMIASBaselineModels(BaseMIAModel):
             generator_model=self.generator_model,
             reference_file=self.reference_file
         )
+
         if self.test_on_real:
             save_dir = os.path.join(self.home_dir, self.config["dir_list"]["data_splits"])
             synthetic_data, synthetic_labels = data_loader.load_original_data(save_dir,  
@@ -66,14 +67,23 @@ class DOMIASBaselineModels(BaseMIAModel):
             synthetic_data, synthetic_labels = data_loader.load_synthetic_data()
             ## need synthetic labels 
             
-            
-        X_test = data_loader.load_membership_dataset()
+                    # Decide whether to align real data
+
+        print("inside domaias baselines")
+        print(synthetic_data.shape[1])
+        if synthetic_data.shape[1] < 978:  # or X_train_real.shape[1] if known
+            align_to_synthetic = synthetic_data
+        else:
+            align_to_synthetic = None
+
+        print(synthetic_data.shape[1])
+        X_test = data_loader.load_membership_dataset(align_to_synthetic)
         y_test = data_loader.load_membership_labels()
 
         if y_test is not None:
             assert len(X_test) == len(y_test), "mismatch in test data and label lengths."
         
-        reference = data_loader.load_reference_data()
+        reference = data_loader.load_reference_data(align_to_synthetic)
 
         scores = run_baselines(X_test, synthetic_data, synthetic_labels, reference, reference, None)
 
