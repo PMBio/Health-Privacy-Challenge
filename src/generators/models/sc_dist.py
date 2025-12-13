@@ -91,7 +91,9 @@ class ScDistributionDataGenerator(BaseSingleCellDataGenerator):
         if self.max_real_value is None:
             raise ValueError("Training must be completed before generating data!")
 
-        X_test_adata = self.load_test_anndata()
+        #X_test_adata = self.load_test_anndata()
+        X_test_adata = self.load_external_anndata()
+
         counts = X_test_adata.X.toarray() if isinstance(X_test_adata.X, np.ndarray) else X_test_adata.X.A
         print("Original counts shape:", counts.shape)
 

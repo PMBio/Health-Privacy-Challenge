@@ -31,13 +31,20 @@ class MIADataLoader:
     
 
     
-    def load_original_data(self, save_dir, dataset_name):
+    def load_original_data(self, save_dir, dataset_name, align_to_synthetic=None):
         # get split num
         split_num = self.synthetic_file.split("_")[-1].split(".")[0]
         print(split_num)
         real_save_dir = os.path.join(save_dir, dataset_name, "real")
         original_data = pd.read_csv(os.path.join(
-            real_save_dir, f"X_train_real_split_{split_num}.csv")).values
+            real_save_dir, f"X_train_real_split_{split_num}.csv"))#.values
+        
+        ## this is needed for others... 
+        if align_to_synthetic is not None:
+            common_cols = align_to_synthetic.columns
+            X_train_real = X_train_real[common_cols]
+
+        X_train_real = X_train_real.values
 
         original_data = StandardScaler().fit_transform(original_data)
         original_labels = pd.read_csv(os.path.join(
@@ -48,13 +55,20 @@ class MIADataLoader:
         return original_data, original_labels
     
     
-    def load_membership_dataset(self):
+    def load_membership_dataset(self, align_to_synthetic=None):
         if not os.path.exists(self.membership_test_file):
             raise FileNotFoundError("Membership test dataset is missing.")
         dataset = pd.read_csv(self.membership_test_file, 
                                          sep="\t", 
-                                         index_col=0).T.values
+                                         index_col=0).T #.values
         
+
+        ## this is needed for others... 
+        if align_to_synthetic is not None:
+            common_cols = align_to_synthetic.columns
+            dataset = dataset[common_cols]
+
+        dataset = dataset.values
         dataset = StandardScaler().fit_transform(dataset)
         
         print(f"Membership test set is loaded. Size {dataset.shape}")
@@ -72,13 +86,20 @@ class MIADataLoader:
 
 
     
-    def load_reference_data(self):
+    def load_reference_data(self, align_to_synthetic=None):
         if self.reference_file:
             reference = pd.read_csv(self.reference_file, 
                                          sep="\t", 
                                          index_col=0).T
             
             #print(reference.head())
+                   ## this is needed for others... 
+            if align_to_synthetic is not None:
+                common_cols = align_to_synthetic.columns
+                reference = reference[common_cols]
+
+            #dataset = dataset.values
+
             reference = StandardScaler().fit_transform(reference)
             return reference
         else:
