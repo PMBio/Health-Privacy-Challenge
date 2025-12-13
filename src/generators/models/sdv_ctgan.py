@@ -106,6 +106,7 @@ class Generator(Module):
     """Generator for the CTGAN."""
 
     def __init__(self, embedding_dim, generator_dim, data_dim):
+        
         super(Generator, self).__init__()
         dim = embedding_dim
         seq = []

@@ -17,7 +17,7 @@ dataset_name <- args[3]
 generator_name <- args[4]
 param_dir <- args[5]
 hcocena_dir <- args[6]
-cutoff <- args[7]
+cutoff <- as.numeric(args[7])
 ### this is co-expression cutoff
 
 bio_res_dir <- file.path(home_dir, "results/bio", dataset_name, generator_name)
@@ -148,6 +148,7 @@ set_layer_settings(
   top_var = c("all", "all"),
   min_corr = rep(cutoff, length(hcobject[["layers"]])),
   range_cutoff_length = rep(100, length(hcobject[["layers"]])),
+  # NOTE: changed to 1000 from 100 on Nov 26, 2025
   print_distribution_plots = rep(FALSE, length(hcobject[["layers"]]))
 )
 
@@ -212,7 +213,9 @@ for (i in 1:length(hcobject$layers)) {
   false_rec <- length(edges) - length(intersect(edges, edges_real))
   coex_rec <- rbind(coex_rec, data.frame(
     set = hcobject$layers_names[i],
-    correctly_rec = intersec, falsely_rec = false_rec, score = intersec / false_rec * false_rec / length(edges_real)
+    correctly_rec = intersec,
+    falsely_rec = false_rec,
+    score = intersec / false_rec * false_rec / length(edges_real)
   ))
 }
 
@@ -231,6 +234,7 @@ coex_rec_summary <- data.frame(
   ),
   dir = c("correct", "false"),
   set = "synthetic"
+  # edges_real = length(edges_real) # NOTE: added this Nov 26, 2025
 )
 coex_rec_summary$set <- factor(coex_rec_summary$set, levels = c("synthetic", "real"))
 

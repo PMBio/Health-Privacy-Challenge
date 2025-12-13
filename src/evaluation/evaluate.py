@@ -163,9 +163,7 @@ class ModelEvaluator(BaseEvaluator):
         return f1
 
 
-
-    ## main difference is I dont do any scaling here... 
-
+    ## issue if there's a dimensional mismatch.. 
     def train_and_evaluate(self, 
                            X_train, 
                            y_train, 
@@ -177,7 +175,7 @@ class ModelEvaluator(BaseEvaluator):
         if reset_model:
             self.model = self.initialize_model()
 
-        # 1. Fit scaler on the *training* set (synthetic or real)
+        # 1. Fit scaler on the *training* set 
         fitted_scaler = StandardScaler().fit(X_train_real)
 
         # 2. Transform both train and test using *that same scaler*
@@ -354,7 +352,7 @@ def combine_diffexpress_results(lfc_threshold):
         results_files = [
             os.path.join(evaluator.bio_files_dir, f)
             for f in os.listdir(evaluator.bio_files_dir)
-            if fnmatch.fnmatch(f, f"DE_*{lfc_threshold}_split*_{kyw}.csv")
+            if fnmatch.fnmatch(f, f"DE_*{lfc_threshold:g}_split*_{kyw}.csv")
         ]
 
         print(results_files)
