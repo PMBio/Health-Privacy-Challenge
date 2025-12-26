@@ -82,7 +82,7 @@ for (proj in cancer_types) {
 The raw count data is preprocessed as follows: 
 - Genes with low counts are removed. 
 - The counts are normalized using DeSeq2's VST function.
-- The normalized data is further filtered to landmark genes (lmgenes_filename = f1000_lm_ensembl.tsv)
+- The normalized data is further filtered to landmark genes (lmgenes_filename = f1000_lm_ensembl.tsv). The landmark genes (n=978) are  identified as representative genes that allow the inference of around 20K other genes by the LINCS L1000 (Subramanian et al., 2017).
 
 ```r
 # Load necessary libraries

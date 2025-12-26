@@ -7,10 +7,11 @@ __pycache__/
 
 # data directory
 data/raw/
-data/red_team_test/
+data/red_team_test*/
 data/meta/
 data/processed/
 results/
+results_*/
 .snakemake/
 log/
 logs/

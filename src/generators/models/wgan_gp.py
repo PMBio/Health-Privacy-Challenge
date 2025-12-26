@@ -578,7 +578,6 @@ class RNAseqDataset(Dataset):
         logging.info(f"Disease types: {self.disease_encoder.classes_}")
 
         
-        # Normalize expression data
         if scaler is None or scaler =="standard":
             self.scaler = StandardScaler()
             self.normalized_data = self.scaler.fit_transform(expression_data)
@@ -593,8 +592,6 @@ class RNAseqDataset(Dataset):
         return {
             'expression': torch.FloatTensor(self.normalized_data[idx]),
             'disease': self.encoded_diseases[idx],  # Returns scalar int
-            #'disease': torch.LongTensor([self.encoded_diseases[idx]]),
-            #'age': torch.LongTensor([self.encoded_ages[idx]])
         }
 
 

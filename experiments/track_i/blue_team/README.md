@@ -3,13 +3,32 @@
 Welcome to your home page! 
 
 **Contents**
+- [Prerequisites](#prerequisites)
 - [Tasks](#tasks)
 - [Guideline for running and evaluating baseline methods](#thread-guideline-for-running-and-evaluating-baseline-methods)
 - [Guideline for developing your own method](#bookmark_tabs-guideline-for-developing-your-own-method)
 - [Submission checklist](#white_check_mark-submission-checklist)
 
+
+## Prerequisites
+
+### Python environment
+
+We suggest installing the provided environments. We recommend using micromamba, though you may also replace mamba with conda. 
+
+```bash
+micromamba create --file environment.yaml --name <env_name>
+```
+
+To be able to run CTGAN with Differential Privacy we utilize ``smartnoise-synth`` package which requires a specific version of ``opacus``. Thus, we provide a specific environment to be able to reproduce this experiment. 
+
+```bash
+micromamba create --file dpctgan_environment.yaml --name <env_name>
+```
+
+
 ## Tasks 
-- Blue teams participate in **Phase 1**, and work towards developing methods that improve the baseline methods and generating novel insights into privacy preservation in biological datasets.
+- Blue teams work towards developing methods that improve the baseline methods and generating novel insights into privacy preservation in biological datasets.
   - TCGA-BRCA and TCGA COMBINED datasets with corresponding subtype and cancer type information in CSV files are provided to download. 
 - Blue teams will use the provided scripts to generate a stratified five-fold dataset splits and the performance of their methods will be evaluated on the average performance. 
 - Each blue team must use a **unique random seed** to generate their dataset splits and run their method.

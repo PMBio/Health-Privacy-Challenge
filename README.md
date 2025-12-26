@@ -1,16 +1,17 @@
-# CAMDA 2025 - ELSA Health Privacy Challenge
+# CAMDA 2026 - ELSA Health Privacy Challenge
+The Health Privacy Challenge is back in 2026, featuring expanded baseline methods and evaluation metrics and an extended submission period across all tasks.
 
-This repository is a "starter package" for the [Health Privacy Competition](https://benchmarks.elsa-ai.eu/?ch=4&com=introduction) that runs within [CAMDA Conference 2025](https://bipress.boku.ac.at/camda2025/). The  Health Privacy Challenge is organized in the context of the European Lighthouse on Safe and Secure AI (ELSA, https://elsa-ai.eu). 
+This repository is a "starter package" for the [Health Privacy Competition](https://benchmarks.elsa-ai.eu/?ch=4) that runs within [CAMDA Conference 2026](https://bipress.boku.ac.at/camda2025/). The  Health Privacy Challenge is organized in the context of the European Lighthouse on Safe and Secure AI (ELSA, https://elsa-ai.eu). 
 
 The Health Privacy Challenge consists of two tracks: 
 
-### Track I: Featuring Bulk RNA-seq 
+### [Track I: Featuring Bulk RNA-seq](/experiments/track_i/) 
 Track I runs in a “Blue Team (🫐)  vs Red Team (🍅)” scheme. 
 -  The **blue teams** develop **novel privacy preserving generative methods** that can mitigate privacy risks while preserving biological insights for bulk gene expression datasets,
-- The **red teams** launch **trustworthy and realistic membership inference attacks (MIA)** against blue teams’ solutions to assess whether these generative methods can withstand privacy attacks. 
+- The **red teams**  act as adversaries by deploying state‑of‑the‑art, realistic membership inference attacks (MIAs) against both the baseline and blue teams’ solutions from the **CAMDA 2025 Challenge**, in order to  assess the privacy robustness of the proposed generative methods.
 
 
-### Track II: Featuring Single-cell RNA-seq 
+### [Track II: Featuring Single-cell RNA-seq](/experiments/track_ii/) 
 Track II invites participants to explore the privacy and utility of synthetic single-cell gene expression (scRNA-seq) data. Participants are encouraged to:
 - **investigate and reveal potential privacy risks** linked to generating synthetic **scRNA-seq** datasets.
 - develop **privacy-preserving generative methods** that balances data privacy and utility.
@@ -30,13 +31,16 @@ We are looking forward to engaging with you and working together to deepen our u
 **Other resources:**
 
 - :speech_balloon: **[CAMDA Health Privacy Challenge Google Groups:](https://groups.google.com/g/camda-health-privacy-challenge)** Join us for questions, discussions and further announcements. 
-- :globe_with_meridians: **[CAMDA Challenge website:](https://bipress.boku.ac.at/camda2025/)** Follow CAMDA 2025 for conference announcements. 
+- :globe_with_meridians: **[CAMDA Challenge website:](https://bipress.boku.ac.at/camda2025/)** Follow CAMDA 2026 for conference announcements. **Will be updated soon**
 - :globe_with_meridians: **[ELSA Benchmark method submission platform:](https://benchmarks.elsa-ai.eu/?ch=4)** The platform to register, to download datasets, and to submit your benchmark methods. 
 - :books: **Relevant papers:** https://arxiv.org/abs/2402.04912 
 
 ## :roller_coaster: Get started!  
+All teams, please check out your home pages to set up and use the starter package!
 
-Both teams, please check out [Getting Started](/experiments/) to set up and use the starter package!
+- [Track I Blue Teams Home Page](/experiments/track_i/blue_team/)
+- [Track I Red Teams Home Page](/experiments/track_i/red_team/)
+- [Track II Single-cell Home Page](/experiments/track_ii/)
 
 
 ## Datasets 
@@ -84,34 +88,8 @@ The winners will be  invited to present their methods at the CAMDA Conference at
 
 ##  :date: Schedule 
 
-![Timeline](timeline.png)
+![Timeline](timeline-2026.png)
 
-<!-- 
-**:round_pushpin: January 13: Submissions open.** 
-- Both teams, please first register through ELSA Benchmarks Platform to download the datasets. We recommend you to register using an organizational email if possible. 
-- To be considered as successfully participating in the competition:
-    - Both teams must submit a CAMDA extended abstract.
-    - Blue teams must have one benchmark method submission by the first phase deadline. 
-    - Red teams must have two benchmark method submissions by the first and second phase deadlines, respectively. 
-
-Red teams must have two benchmark method submissions by the first and second phase deadlines, respectively. 
-- Please make sure to adhere to the guideline closely to avoid invalidating your submission.
-
-**:round_pushpin: March 15: First phase deadline, method submission for both teams.**
-- **Blue teams** must complete their first and final benchmark method submission as detailed in the [🫐 Blue Team homepage](/experiments/blue_team/README.md). 
-- **Red teams** must complete their first benchmark method submissions as detailed in the [🍅 Red Team homepage](/experiments/red_team/README.md). 
-
-**:round_pushpin: March 22: Leaderboard announcement.**
-- Leaderboards for both teams is announced based on the first phase results. 
-- A set of blue team solutions, selected based on leaderboard ranking and the novelty of the method, is shared with red teams, to be assessed in a membership inference attack.
-- Red teams are granted access to download the synthetic data and white-box code provided by the selected blue teams.
-
-**:round_pushpin: May 12: Second phase deadline, model submission for red teams.**
-- Red teams must submit their second and final benchmark submissions in response to the blue teams' solutions.
-
-**:round_pushpin: May 15: CAMDA extended abstract submission deadline for both teams.** 
-- Both blue and red teams must submit their CAMDA extended abstract through ISMB submission system. These abstracts should describe the methods submitted through the benchmark submission system. 
--->
 
 ## :busts_in_silhouette: Organization Team  
 This competition is designed as a collaborative effort between [European Molecular Biology Laboratory  (EMBL)](https://www.embl.org), [CISPA Helmholtz Center for Information Security](https://cispa.de/en), and the [University of Helsinki](https://www.helsinki.fi/en) with the support of [Barcelona Computer Vision Center (CVC)](https://www.cvc.uab.es) within the context of ELSA Project.  
@@ -121,7 +99,7 @@ This competition is designed as a collaborative effort between [European Molecul
 - **University of Helsinki:**  [Joonas Jälkö](https://researchportal.helsinki.fi/en/persons/joonas-jälkö/) and [Antti Honkela](https://www.cs.helsinki.fi/u/ahonkela/)
 
 and in collaboration with **Saez-Rodriguez** group in Track II and the review process:
-- **University of Heidelberg:** [Sebastian Lobentanzer](https://github.com/slobentanzer), [Pablo R. Mier](https://github.com/pablormier), [Attila Gabor](). 
+- **University of Heidelberg:** [Sebastian Lobentanzer](https://github.com/slobentanzer), and [Pablo R. Mier](https://github.com/pablormier).
 
 
 We also thank [Katharina Mikulik (DKFZ)](https://steglelab.org/katharina-mikulik/),  [Kevin Domanegg (DKFZ)](https://steglelab.org/kevin-domanegg/), and [Danai Vaigaki (EMBL)](https://steglelab.org/danai-vagiaki/) for helpful feedback. 

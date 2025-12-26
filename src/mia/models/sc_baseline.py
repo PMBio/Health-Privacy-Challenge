@@ -42,7 +42,8 @@ def batch_d_min(X: np.ndarray, Y: np.ndarray, batch_size=1000) -> np.ndarray:
     min_dists = []
     for i in range(0, X.shape[0], batch_size):
         batch = X[i:i + batch_size]
-        distances = batch_d(batch, Y, batch_size)
+        #distances = batch_d(batch, Y, batch_size)
+        distances = d(batch, Y)   # direct call, no inner batch
         min_dists.append(np.min(distances, axis=1))
     return np.concatenate(min_dists)
 
