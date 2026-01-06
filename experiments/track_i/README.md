@@ -5,19 +5,6 @@
 ### Python environment
 
 
-We suggest both teams to install the provided environments. We recommend using micromamba, though you may also replace mamba with conda. 
-
-```bash
-micromamba create --file environment.yaml --name <env_name>
-```
-
-To be able to run CTGAN with Differential Privacy we utilize ``smartnoise-synth`` package which requires a specific version of ``opacus``. Thus, we provide a specific environment to be able to reproduce this experiment. 
-
-```bash
-micromamba create --file dpctgan_environment.yaml --name <env_name>
-```
-
-
 ## [:blueberries: Blue Team (Track I)](/experiments/track_i/blue_team/)
 
 Visit the [Blue Team Home Page](/experiments/track_i/blue_team/) for detailed instructions. 
@@ -35,7 +22,7 @@ Please make sure to cite the following papers if any of the baseline methods and
 
 **Competition related**
 
-1. CAMDA 2025 Health Privacy Challenge
+1. CAMDA 2026 Health Privacy Challenge
 
 **Dataset sources**
 

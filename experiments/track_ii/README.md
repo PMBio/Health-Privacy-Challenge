@@ -40,6 +40,7 @@ This should solve two potential errors you might face while running evaluation s
 2. https://github.com/theislab/scib/issues/253 `Exec format error: '~~/scib/knn_graph/knn_graph.o' ` 
 
 
+
 ## Tasks 
 - In Track II, the participants work towards **developing methods that improve the baseline methods and generating novel insights into privacy preservation in multi-sample per donor setting** on scRNA-seq dataset.
 - Train and test splits of the [OneK1K single-cell RNA-seq counts](https://onek1k.org) are provided in `h5ad` format, with corresponding cell-type inside `annData` observation. 
@@ -67,7 +68,7 @@ We share these datasets in `annData` format with the following annotations: `ind
 
 ### Download 
 
-- Train and test datasets can be downloaded from the [ELSA Benchmark website](https://benchmarks.elsa-ai.eu/?ch=4) after registration and signing the data download agreement. 
+- Train and test datasets can be downloaded from the [ELSA Benchmark website](https://benchmarks.elsa-ai.eu/?ch=8) after registration and signing the data download agreement. 
 - `config.yaml` files inside [generation](/experiments/track_ii/1_generation/) and  [evaluation](/experiments/track_ii/2_evaluation/) organize directory structure and configurations. Please ensure that the downloaded datasets are placed in the corresponding directories under `dataset_config`, or update the directory path according to your preference.
 
 ```bash
@@ -76,6 +77,8 @@ dataset_config:
   train_count_file: "data/processed/onek1k/onek1k_annotated_train.h5ad" 
   test_count_file: "data/processed/onek1k/onek1k_annotated_test.h5ad" 
 ```
+
+
 
 ## :thread: Guideline for running and evaluating baseline methods
 
@@ -142,7 +145,7 @@ The following files are required for submission, in zipped form, `trackii_{yourt
 2. Updated `config.yaml` file containing `{your_generator}_config`. 
 3. `environment.yaml` that is required to run your method.
 
-Please note that method submissions are collected through [**ELSA Benchmark Platform**](https://benchmarks.elsa-ai.eu/?ch=4), and the accompanying CAMDA extended abstracts must be summited through [**ISMB submission system**](https://www.iscb.org/ismbeccb2025/home).  
+Please note that method submissions are collected through [**ELSA Benchmark Platform**](https://benchmarks.elsa-ai.eu/?ch=8), and the accompanying CAMDA extended abstracts must be summited through [**ISMB submission system**](https://www.iscb.org/ismb2026/home).  
 
 
 ### :pencil: CITATIONS
@@ -151,7 +154,7 @@ Please make sure to cite the following papers if any of the baseline methods and
 
 **Competition related**
 
-1. CAMDA 2025 Health Privacy Challenge
+1. CAMDA 2026 Health Privacy Challenge
 
 **Dataset sources**
 

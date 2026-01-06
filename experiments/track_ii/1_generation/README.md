@@ -6,7 +6,7 @@
 
 Please make sure to run the scripts from the same directory as `config.yaml` is placed. 
 
-**NOTE:** The generation method might require up to **~125GB memory space.** We're currently working on including **memory-efficient** alternatives to **generate** and **evaluate** functions on [sparse-impl branch](https://github.com/PMBio/Health-Privacy-Challenge/tree/sparse-impl). 
+**NOTE:** The generation method might require up to **~125GB memory space.** We also have a **memory-efficient** alternative to **generate** and **evaluate** functions on [sparse-impl branch](https://github.com/PMBio/Health-Privacy-Challenge/tree/sparse-impl). 
 
 ### Activate the environment
 
@@ -45,4 +45,15 @@ In order to generate synthetic data with this setting, simply run the below scri
 `experiment_name` can be, e.g. `distr_Poisson`.  This will generate synthetic data  under data_splits directory,
 
 e.g. ``data_splits/{onek1k}/synthetic/sc_dist/distr_Poisson/onek1k_annotated_synthetic.h5ad``
+
+
+## Literature and past submissions
+
+We encourage participants to explore and compare their generation methods for further benchmarking and evaluation to :
+- Solutions proposed by **Health Privacy Challenge 2025** participants: 
+    - [Differentially-Private Non-Negative Matrix Factorization](https://benchmarks.elsa-ai.eu/?ch=4&com=evaluation&view=method_info&task=4&m=989&rt=1)
+    - [Scdesign2 Poisson Ensemble](https://benchmarks.elsa-ai.eu/?ch=4&com=evaluation&view=method_info&task=4&m=999&rt=1)  
+- Other advanced synthetic data generation techniques such as [scDesign2 (Sun et al., 2021)](http://link.springer.com/article/10.1186/s13059-021-02367-2), [scDiffusion (Luo et al., 2024)](https://academic.oup.com/bioinformatics/article/40/9/btae518/7738782). 
+
+
 

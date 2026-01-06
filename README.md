@@ -1,7 +1,7 @@
 # CAMDA 2026 - ELSA Health Privacy Challenge
 The Health Privacy Challenge is back in 2026, featuring expanded baseline methods and evaluation metrics and an extended submission period across all tasks.
 
-This repository is a "starter package" for the [Health Privacy Competition](https://benchmarks.elsa-ai.eu/?ch=4) that runs within [CAMDA Conference 2026](https://bipress.boku.ac.at/camda2025/). The  Health Privacy Challenge is organized in the context of the European Lighthouse on Safe and Secure AI (ELSA, https://elsa-ai.eu). 
+This repository is a "starter package" for the [Health Privacy Competition](https://benchmarks.elsa-ai.eu/?ch=8) that runs within [CAMDA Conference 2026](). The  Health Privacy Challenge is organized in the context of the European Lighthouse on Safe and Secure AI (ELSA, https://elsa-ai.eu). 
 
 The Health Privacy Challenge consists of two tracks: 
 
@@ -32,7 +32,7 @@ We are looking forward to engaging with you and working together to deepen our u
 
 - :speech_balloon: **[CAMDA Health Privacy Challenge Google Groups:](https://groups.google.com/g/camda-health-privacy-challenge)** Join us for questions, discussions and further announcements. 
 - :globe_with_meridians: **[CAMDA Challenge website:](https://bipress.boku.ac.at/camda2025/)** Follow CAMDA 2026 for conference announcements. **Will be updated soon**
-- :globe_with_meridians: **[ELSA Benchmark method submission platform:](https://benchmarks.elsa-ai.eu/?ch=4)** The platform to register, to download datasets, and to submit your benchmark methods. 
+- :globe_with_meridians: **[ELSA Benchmark method submission platform:](https://benchmarks.elsa-ai.eu/?ch=8)** The platform to register, to download datasets, and to submit your benchmark methods. 
 - :books: **Relevant papers:** https://arxiv.org/abs/2402.04912 
 
 ## :roller_coaster: Get started!  
@@ -45,7 +45,7 @@ All teams, please check out your home pages to set up and use the starter packag
 
 ## Datasets 
 
-Datasets are available for download in [ELSA Benchmarks Competition platform](https://benchmarks.elsa-ai.eu/?ch=4&com=introduction) after registration and signing the data download agreement. 
+Datasets are available for download in [ELSA Benchmarks Competition platform](https://benchmarks.elsa-ai.eu/?ch=8&com=introduction) after registration and signing the data download agreement. 
 
 ### Track I: Featuring bulk RNA-seq
 We re-distribute pre-processed versions of two open-access TCGA RNA-seq datasets, available through the  [GDC portal](https://gdc.cancer.gov):

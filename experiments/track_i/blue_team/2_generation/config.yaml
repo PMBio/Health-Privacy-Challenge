@@ -35,14 +35,19 @@ cvae_config:
     batch_size: 64
   
   model_config:
-    z_dim: 64
-    beta: 0.001
+    z_dim: 128
+    beta: 0.001 ## to tune 
     lr: 0.001
     transform: "none"
+    condition_type: "embedding" #embedding
 
   generation_config:
     n_synth_samples: -1
     uniform_y: False
+
+  disease_embed_dim: 20
+
+
 
 dpcvae_config: 
   device_type: "cuda"
@@ -82,6 +87,44 @@ ctgan_config:
   generation_config:
     n_synth_samples: -1
 
+
+cvae_gmm_config: 
+  device_type: "cuda" 
+  #dir_feature_name: "latent_dim"
+  random_seed: 42
+  preprocess: "standard"
+  
+  train_config:
+     epochs: 100
+     batch_size: 64
+
+  model_config:
+    latent_dim: 128
+    learning_rate: 0.001
+    beta: 0.001 #1.0
+    n_components: 3
+    condition_type: "embedding" #onehot
+
+  disease_embed_dim: 20
+
+
+wgan_gp_config: 
+  device_type: "cuda" 
+  random_seed: 42
+  preprocess: "standard"
+  
+  train_config:
+     epochs: 100
+     batch_size: 64
+
+  model_config:
+    latent_dim: 128
+    lambda_gp: 10
+    n_critic: 5
+    learning_rate: 0.0001
+    condition_type: "embedding" #embedding #onehot
+
+  disease_embed_dim: 20
 
 dpctgan_config:
   # This configuration uses the SmartNoise implementation. https://github.com/opendp/smartnoise-sdk
