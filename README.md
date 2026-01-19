@@ -8,7 +8,7 @@ The Health Privacy Challenge consists of two tracks:
 ### [Track I: Featuring Bulk RNA-seq](/experiments/track_i/) 
 Track I runs in a “Blue Team (🫐)  vs Red Team (🍅)” scheme. 
 -  The **blue teams** develop **novel privacy preserving generative methods** that can mitigate privacy risks while preserving biological insights for bulk gene expression datasets,
-- The **red teams**  act as adversaries by deploying state‑of‑the‑art, realistic membership inference attacks (MIAs) against both the baseline and blue teams’ solutions from the **CAMDA 2025 Challenge**, in order to  assess the privacy robustness of the proposed generative methods.
+- The **red teams**  act as adversaries by deploying state‑of‑the‑art, realistic membership inference attacks (MIAs) **against a set of the baseline and Blue Teams’ solutions from the CAMDA 2025 Challenge**, in order to  assess the privacy robustness of the proposed generative methods.
 
 
 ### [Track II: Featuring Single-cell RNA-seq](/experiments/track_ii/) 
@@ -71,22 +71,9 @@ We re-distribute raw counts of **OneK1K single-cell RNA-seq** dataset (https://o
 Navigate [Track II homepage](/experiments/track_ii/) for details about the pre-processing steps. 
 
 
-<!-- comment 
-## :chart_with_upwards_trend: Evaluation
-
-The teams with the best solutions will be determined based on multiple criteria, including,
-
-- :dart: leaderboard ranking, 
-- :bulb: novelty of methods, 
-- :seedling: generation of novel privacy preservation insights for biology. 
-
-We strongly encourage the participants to submit their CAMDA extended abstracts for evaluation **even if they might not have high rankings on the leaderboards.** 
-
-The winners will be  invited to present their methods at the CAMDA Conference at ISMB 2025 in Liverpool. Travel fellowships will be available for the selected teams sponsored by ELSA (https://elsa-ai.eu). 
--->
-
-
 ##  :date: Schedule 
+
+#### Exact submission dates will be updated soon!
 
 ![Timeline](timeline-2026.png)
 

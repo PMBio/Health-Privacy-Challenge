@@ -28,9 +28,9 @@ micromamba create --file dpctgan_environment.yaml --name <env_name>
 
 
 ## Tasks 
-- Blue teams work towards developing methods that improve the baseline methods and generating novel insights into privacy preservation in biological datasets.
-  - TCGA-BRCA and TCGA COMBINED datasets with corresponding subtype and cancer type information in CSV files are provided to download. 
-- Blue teams will use the provided scripts to generate a stratified five-fold dataset splits and the performance of their methods will be evaluated on the average performance. 
+- Blue teams work towards developing methods that improve **the baseline methods and generating novel insights into privacy preservation** in biological datasets. 
+  - Please review the [CAMDA 2025 Challenge](https://benchmarks.elsa-ai.eu/?ch=4&com=evaluation&task=1) evaluation board to examine the participant submissions. 
+- Blue teams will use the provided scripts to generate a  **stratified five-fold dataset splits** and the performance of their methods will be evaluated on the average performance. 
 - Each blue team must use a **unique random seed** to generate their dataset splits and run their method.
   - For example, in the provided examples, value of 42, is assigned to the random seed, in both dataset and generator method configurations.
   - Blue teams must run their experiments with a unique random seed consistent throughout `dataset_config` and `{generator_name}_config` configurations in the `config.yaml` file. 

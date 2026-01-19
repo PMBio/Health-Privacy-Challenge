@@ -132,7 +132,13 @@ e.g.
 ## Metric definitions 
 - Here we describe the list of evaluation metrics used in [evaluate.py](/src/evaluation/evaluate.py). **We strongly encourage the participants to also use other evaluation metrics, or even, propose their own.**
 
+- Within the Blue Team evaluation script, we provide **distance-to-closest** as a proxy metric for privacy. Please follow the instructions on the [Red Team Homepage](/experiments/track_i/red_team/) to run the provided black-box MIA models on your synthetic data to get a more comprehensive assesment of privacy risk. 
+  - Here we report attack success under the GAN-Leaks method, measured as TPR at FPR = 0.1. Note that reproducing the below results for this metric and additional MIA-relevant metrics require running the full Red Team setup.
+
 - The term "synthetic datasets" here refers to the datasets generated for each training set in each split. The test split, which is never used in the training or synthetic data generation process, is reserved solely for evaluation purposes, such as training on synthetic data and testing on real data, among other evaluations.
+
+- Downstream task performance may differ slightly from last year’s results due to the introduction of standard scaling in this step.
+
 
 | Category | Method Name                | Method Details                       | Description                                         | Value (Better) |
 |----------|----------------------------|--------------------------------------|-----------------------------------------------------|----------------|
@@ -142,45 +148,66 @@ e.g.
 | Utility  | avg_pr_macro_real     | AUPR        | Train on Real Test on Real (for downstream task)                                                    | (High)         |
 | Utility  | feature_overlap_count      | Number of Overlapping Important Features | 10 features * per class                                               | (High)         |
 | Utility  | PCA Plot                   | Visualizing 2D clusters                                   | -                                                   |                |
-| Fidelity | MMD_score                  | Maximum Mean Discrepancy             | Difference between synthetic and real datasets' probability distributions    | (Low)          |
+| Fidelity | MMD_test                  | Maximum Mean Discrepancy             | Difference between synthetic and real test datasets' probability distributions    | (Low)          |
+| Fidelity | MMD_train                  | Maximum Mean Discrepancy             | Difference between synthetic and real train datasets probability distributions    | (Low)          |
+| Fidelity | KL (test)                 | Maximum Mean Discrepancy             | Difference between synthetic and real test datasets' probability distributions    | (Low)          |
+| Fidelity | KL (train)                 | Maximum Mean Discrepancy             | Difference between synthetic and real train datasets' probability distributions    | (Low)          |
 | Fidelity | discriminative_score             | Discriminative score           | F1 score for distinguishing  synthetic and real dataset  | (Low)          |
 | Privacy  | distance_to_closest        | Distance to the Closest Neighbor     | Average distance of synthetic dataset to the nearest real data point                  | (High)         |
 | Privacy  | distance_to_closest_base        | Distance to the Closest Neighbor     | Average distance within real dataset to the nearest data point                  | (High)         |
+| Privacy  | tpr_at_fpr_01       | MIA performance under GAN-leaks    | TPR @ FPR = 0.1             | (High)         |
+| Biological Plausibility  | -      | Co-expression Mean Precision (r >0.3)    | Correct / (Correct + False)                  | (High)         |
+| Biological Plausibility  | -      | Co-expression Mean Correctly Recovered Edges (r >0.3)    | Number of Correct Edges                | (High)         |
+| Biological Plausibility  | -      | Differential Expression Recovery True Positive Rate (Up-regulation)  |  TPR @ FPR >=0.05                 | (High)         |
+| Biological Plausibility  | -      | Differential Expression Recovery True Positive  Rate (Up-regulation)   | TPR @ FPR >=0.05                 | (High)         |
 
 
 ## Baseline results
 
-Default values in [config.yaml](/experiments/track_i/blue_team/2_generation/config.yaml) are used. The average scores are reported. 
+- Here we include the performance of some of the provided baseline generative methods. Default values in [config.yaml](/experiments/track_i/blue_team/2_generation/config.yaml) are used, and the average scores across folds are reported.  
+
 
 ### TCGA-BRCA
 
-| Metric / Method            | Multivariate | CVAE      | DP-CVAE   | CTGAN     | DP-CTGAN  |
-|----------------------------|--------------|-----------|-----------|-----------|-----------|
-| accuracy_synthetic         | 0.8476       | 0.8348    | 0.6731    | 0.2112    | 0.1955    |
-| accuracy_real              | 0.8650       | 0.8650    | 0.8650    | 0.8650    | 0.8632    |
-| avg_pr_macro_synthetic     | 0.8415       | 0.8396    | 0.4529    | 0.2260    | 0.2090    |
-| avg_pr_macro_real          | 0.8656       | 0.8656    | 0.8656    | 0.8656    | 0.8659    |
-| feature_overlap_count      | 19.6000      | 20.8000   | 6.2000    | 5.4000    | 1.2000    |
-| MMD_score                  | 0.0180       | 0.0177    | 0.1928    | 0.0935    | 1.1529    |
-| discriminative_score       | 0.5496       | 0.7997    | 1.0000    | 0.9969    | 1.0000    |
-| distance_to_closest        | 28.5348      | 16.0372   | 49.8122   | 19.6806   | 101.9678  |
-| distance_to_closest_base   | 24.0435      | 24.0435   | 24.0435   | 24.0435   | 24.0435   |
+| Metric / Method            | Multivariate | CVAE-GMM  | DP-CVAE | WGAN-GP | 
+|----------------------------|--------------|-----------|---------|---------|
+| accuracy_synthetic         | 0.8494       | 0.8296    | 0.6694  | 0.7924  | 
+| accuracy_real              | 0.8485       | 0.8485    | 0.8485  | 0.8485  | 
+| avg_pr_macro_synthetic     | 0.8335       | 0.7991    | 0.4374  | 0.7819  | 
+| avg_pr_macro_real          | 0.8513       | 0.8513    | 0.8513  | 0.8513  | 
+| feature_overlap_count      | 17.0.        | 15.8      | 1.8.    | 6.8     | 
+| MMD_train                  | 0.0180       | 0.0526    | 0.1463  | 0.0323  | 
+| kl_mean_train              | 0.1402       | 1.2003    | 0.4386  | 0.1196  | 
+| discriminative_score       | 0.5280       | 0.6939    | 1.0000  | 0.7052  | 
+| distance_to_closest        | 28.5348      | 16.7735   | 43.5594 | 19.3614 | 
+| distance_to_closest_base   | 24.0435      | 24.0435   | 24.0435 | 24.0435 | 
+| tpr_at_fpr_01              | 0.1152       | 0.1492    | 0.1003  | 0.1196  | 
+| co-expr_num_correct_edges  | 29691.80     | 36350.80  | 89.25	  | 36369.2 | 
+| co-expr_precision          | 0.8785       | 0.3346    | 0.1145  | 0.3763  | 
+| DE_TPR_up                  | 0.7857       | 0.9413    | 0.0832  | 0.7515  | 
+| DE_TPR_down                | 0.8341       | 0.9463    | 0.1443  | 0.7770  | 
 
 
 
 ### TCGA-COMBINED
 
-| Metric                        | Multivariate | CVAE    | DP-CVAE | CTGAN   | DP-CTGAN |
-|-------------------------------|--------------|---------|---------|---------|----------|
-| accuracy_synthetic            | 0.9755       | 0.9695  | 0.79528 | 0.08584 | 0.10294  |
-| accuracy_real                 | 0.97826      | 0.97826 | 0.97826 | 0.97826 | 0.97826  |
-| avg_pr_macro_synthetic        | 0.9908       | 0.98684 | 0.72286 | 0.1112  | 0.10824  |
-| avg_pr_macro_real             | 0.9919       | 0.9919  | 0.9919  | 0.9919  | 0.9919   |
-| feature_overlap_count         | 65.6         | 61.8    | 23.6    | 13.4    | 11.6     |
-| MMD_score                     | 0.00938      | 0.02117 | 0.11442 | 0.09132 | 0.91257  |
-| discriminative_score          | 0.57832      | 0.81038 | 0.99989 | 0.99687 | 1.0      |
-| distance_to_closest           | 28.87758     | 17.3058 | 65.4376 | 26.2715 | 104.4205 |
-| distance_to_closest_base      | 23.27216     | 23.27216| 23.27216| 23.27216| 23.27216 |
+| Metric                        | Multivariate | CVAE-GMM | DP-CVAE | WGAN-GP |
+|-------------------------------|--------------|----------|---------|---------|
+| accuracy_synthetic            | 0.9780       | 0.9711   | 0.8808  | 0.9623  | 
+| accuracy_real                 | 0.9789       | 0.9789   | 0.9789  | 0.9789  | 
+| avg_pr_macro_synthetic        | 0.9907       | 0.9825   | 0.6173  | 0.9793  | 
+| avg_pr_macro_real             | 0.9913       | 0.9913   | 0.9913  | 0.9913  | 
+| feature_overlap_count         | 52.6         | 39.4     | 16.4    | 24.8    | 
+| MMD_train                     | 0.0093       | 0.0259   | 0.0953  | 0.0141  | 
+| kl_mean_train                 | 0.0554       | 0.4914   | 0.3030  | 0.1327  | 
+| discriminative_score          | 0.5775       | 0.7898   | 0.9996  | 0.9532  | 
+| distance_to_closest           | 28.8775      | 16.1798  | 58.1306 | 20.1304 | 
+| distance_to_closest_base      | 23.2721      | 23.2721  | 23.2721 | 23.2721 | 
+| tpr_at_fpr_01                 | 0.1105       | 0.1205   | 0.0999  | 0.1016  | 
+| co-expr_num_correct_edges     | 25567.0	     | 32634.6  | -       | 32810.6 | 
+| co-expr_precision             | 0.9611       | 0.3796   | -       | 0.4309  | 
+| DE_TPR_up                     | 0.9171       | 0.9789   | -       | 0.9498  | 
+| DE_TPR_down                   | 0.9078       | 0.9752   | -       | 0.9509  | 
 
 
 

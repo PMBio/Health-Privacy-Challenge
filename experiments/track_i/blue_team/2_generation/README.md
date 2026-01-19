@@ -16,11 +16,13 @@ This section assumes you already generated real data splits. Please refer to [da
 ## Generate synthetic data with baseline methods for each split
 The below code generate synthetic data for each real data split `split_1, split_2` etc., generated previously, where `$split_num` is the number of splits defined in config.yaml. It's set as follows: `split_num: 5`. **Please keep it as it is.** 
 
-We provide three baseline methods, presented in total five configurations: 
+We provide multiple baseline methods, presented in total seven configurations: 
 
 - `multivariate`: Multivariate normal sampling from average gene expression levels per subtype/type.
 - `cvae` & `dpcvae`: Conditional Variational Autoencoder (CVAE, Sohn et al., 2015) without and **with Differential Privacy (DP)**, respectively. 
 - `ctgan` & `dpctgan`:Conditional Generative Adversarial Networks (CTGAN, Xu et al., 2019) without and **with Differential Privacy (DP)**, respectively.
+- `cvae_gmm`: CVAE with Gaussian Mixture Models to replaces the single Gaussian prior (Apellániz et al. 2024)
+- `wgan_gp`: Wasserstein GAN with Gradient Penalty (Arjovsky et al., 2017, Gulrajani et al., 2017). 
 
 In order to run these methods, you first need to modify inside the ``config.yaml``. Each generator model has their own configuration arguments. e.g. ``{generator_name}_config``. 
 

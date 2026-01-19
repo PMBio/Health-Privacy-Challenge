@@ -1,9 +1,5 @@
 # :roller_coaster: Getting Started
 
-## Prerequisites
-
-### Python environment
-
 
 ## [:blueberries: Blue Team (Track I)](/experiments/track_i/blue_team/)
 
