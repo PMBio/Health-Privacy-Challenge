@@ -27,6 +27,11 @@ Assuming you generated synthetic datasets using the blue team's pipeline, now le
 - GAN-Leaks (calibrated) (`gan_leaks_cal`)
 - DOMIAS (KDE) (`domias_kde`)
 
+We also included two downstream task confidence based attacks, namely, 
+- Confidence LR (`conf_lr`)
+- Confidence RF (`conf_rf`)
+Implementation [details are here](/src/mia/models/baseline.py).
+
 - In order to run these methods,  ``attack_model`` parameter  inside the ``config.yaml`` is **by default** set as ``domias_baselines``. This configuration will run the above attacks against the generator defined in the ``generator_config``. 
 
 - Please be reminded that you need to put `config.yaml` in the same directory you are running your experiment. 
@@ -94,37 +99,46 @@ Classification metrics, accuracy, AUC, and AUPR, is utilized to evaluate attack 
 ### TCGA-BRCA
 #### Multivariate
 
-| Method      | Accuracy   | AUCROC     | Average Precision |
-|-------------|------------|------------|-------------------|
-| MC          | 0.515152   | 0.521906   | 0.806972          |
-| gan_leaks   | 0.511846   | 0.524526   | 0.812951          |
+| Method      | TPR@FPR=0.1 | AUCROC.    | 
+|-------------|-------------|------------|
+| MC          | 0.8183      | 0.5081     | 
+| gan_leaks   | 0.1152      | 0.5311     |
+| conf_LR     | 0.1035      | 0.5673     | 
+| conf_RF     | 0.1108      | 0.5180     | 
 
-#### CVAE
+#### CVAE-GMM
 
-| Method      | Accuracy | AUCROC   | Average Precision |
-|-------------|----------|----------|--------------------|
-| MC          | 0.614325 | 0.656251 | 0.843067          |
-| gan_leaks   | 0.614325 | 0.723706 | 0.921273          |
+| Method      | TPR@FPR=0.1 | AUCROC   | 
+|-------------|-------------|----------|
+| MC          | 1.0000      | 0.5198   | 
+| gan_leaks   | 0.1492      | 0.6098   |
+| conf_LR     | 0.1063      | 0.5517   | 
+| conf_RF     | 0.1099      | 0.5282   | 
+
 
 
 ### TCGA-COMBINED
 
 #### Multivariate
 
-| Method        | Accuracy | AUCROC  | Average Precision |
-|---------------|----------|---------|-------------------|
-| LOGAN_D1      | 0.500208 | 0.500172| 0.800439          |
-| MC            | 0.510941 | 0.515112| 0.803992          |
-| domias_kde    | 0.499931 | 0.499167| 0.799945          |
-| gan_leaks     | 0.446264 | 0.514199| 0.807170          |
-| gan_leaks_cal | 0.527319 | 0.562164| 0.836836          |
+| Method        | TPR@FPR=0.1 | AUCROC  | 
+|---------------|-------------|---------|
+| LOGAN_D1      | 0.1013      | 0.5039  | 
+| MC            | 0.6400      | 0.5059| 
+| domias_kde    | 0.0998      | 0.4989| 
+| gan_leaks     | 0.1105      | 0.5261| 
+| gan_leaks_cal | 0.1844      | 0.5614| 
+| conf_LR       | 0.1031      | 0.5124| 
+| conf_RF       | 0.1079      | 0.5111| 
 
-#### CTGAN
+#### CVAE-GMM
 
-| Method         | Accuracy  | AUCROC    | Average Precision |
-|----------------|-----------|-----------|--------------------|
-| LOGAN_D1       | 0.498358  | 0.500121  | 0.800026           |
-| MC             | 0.501874  | 0.502864  | 0.800275           |
-| domias_kde     | 0.500578  | 0.499929  | 0.800366           |
-| gan_leaks      | 0.463752  | 0.501731  | 0.800338           |
-| gan_leaks_cal  | 0.501874  | 0.502757  | 0.801166           |
+| Method         | TPR@FPR=0.1  | AUCROC    | 
+|----------------|--------------|-----------|
+| LOGAN_D1       | 0.1021       | 0.5050    | 
+| MC             | 1.0000       | 0.5095    | 
+| domias_kde     | 0.1022       | 0.4981    | 
+| gan_leaks      | 0.1205       | 0.5393    | 
+| gan_leaks_cal  | 0.9222       | 0.5163    | 
+| conf_LR        | 0.1020       | 0.5077    | 
+| conf_RF        | 0.1044       | 0.5106    | 

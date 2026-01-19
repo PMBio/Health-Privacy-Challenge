@@ -299,7 +299,6 @@ def downstream_confidence_attack(X_candidates, X_synth, y_synth,
     return scores
 
 
-### todo: call loss attack 
 def run_baselines(
     X_test: np.ndarray,
     #Y_test: np.ndarray,
@@ -313,8 +312,8 @@ def run_baselines(
    
     score["MC"] = MC(X_test, X_G)
     score["gan_leaks"] = GAN_leaks_modified(X_test, X_G)
-    score["loss_lr"] = downstream_confidence_attack(X_test, X_G, y_G, model_type='lr')
-    score["loss_rf"] = downstream_confidence_attack(X_test, X_G, y_G, model_type='rf')
+    score["conf_lr"] = downstream_confidence_attack(X_test, X_G, y_G, model_type='lr')
+    score["conf_rf"] = downstream_confidence_attack(X_test, X_G, y_G, model_type='rf')
   
     if X_ref is not None:
         score["LOGAN_D1"] = LOGAN_D1(X_test, X_G, X_ref)
