@@ -37,11 +37,9 @@ Implementation [details are here](/src/mia/models/baseline.py).
 
 - Please be reminded that you need to put `config.yaml` in the same directory you are running your experiment. 
 
-- DOMIAS, GAN-leaks calibrated and LOGAN require a reference dataset, a dataset that reflect the true data distribution and not utilized during generative process. **We provide a reference dataset for TCGA-COMBINED dataset only,**  of  <824 individuals x 978 genes >.
-    - You are free to use this or other relevant public datasets as a reference set in case your method depends on it. 
-
-
-- :chart_with_upwards_trend:  You are free to use relevant public datasets as a reference set in case your method depends on it. 
+- DOMIAS, GAN-leaks calibrated and LOGAN require a reference dataset, a dataset that reflect the true data distribution and not utilized during generative process. **We provide a reference dataset for TCGA-COMBINED dataset only,**  of  <824 individuals x 978 genes >. 
+  - This data is available for download on the benchmark platform under [Red Team Downloads](https://benchmarks.elsa-ai.eu/?ch=8&com=red_downloads&rt=1). 
+  - :chart_with_upwards_trend:  **You are free to use this or other relevant public datasets** as a reference set in case your attack method depends on it. 
 
 ## Running baseline MIA methods
 
