@@ -30,13 +30,16 @@ Assuming you generated synthetic datasets using the blue team's pipeline, now le
 We also included two downstream task confidence based attacks, namely, 
 - Confidence LR (`conf_lr`)
 - Confidence RF (`conf_rf`)
+
 Implementation [details are here](/src/mia/models/baseline.py).
 
 - In order to run these methods,  ``attack_model`` parameter  inside the ``config.yaml`` is **by default** set as ``domias_baselines``. This configuration will run the above attacks against the generator defined in the ``generator_config``. 
 
 - Please be reminded that you need to put `config.yaml` in the same directory you are running your experiment. 
 
-- DOMIAS, GAN-leaks calibrated and LOGAN require a reference dataset, a dataset that reflect the true data distribition and not utilized during generative process. **We provide a reference dataset for TCGA-COMBINED dataset only.**
+- DOMIAS, GAN-leaks calibrated and LOGAN require a reference dataset, a dataset that reflect the true data distribution and not utilized during generative process. **We provide a reference dataset for TCGA-COMBINED dataset only,**  of  <824 individuals x 978 genes >.
+    - You are free to use this or other relevant public datasets as a reference set in case your method depends on it. 
+
 
 - :chart_with_upwards_trend:  You are free to use relevant public datasets as a reference set in case your method depends on it. 
 
@@ -94,7 +97,7 @@ python {src_dir}/mia/red_team.py run-mia
 
 ## Evaluation
 
-Classification metrics, accuracy, AUC, and AUPR, is utilized to evaluate attack performances. We report here the MIA performances against some of the baseline generators, using the default parameter values provided in the [config.yaml](/experiments/track_i/blue_team/2_generation/config.yaml). 
+Classification metrics, accuracy, AUC, AUPR, and TPR @ FPR = [0.01, 0.1]  are utilized to evaluate attack performances. We report here the MIA performances against some of the baseline generators, using the default parameter values provided in the [config.yaml](/experiments/track_i/blue_team/2_generation/config.yaml). 
 
 ### TCGA-BRCA
 #### Multivariate
