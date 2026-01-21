@@ -46,6 +46,8 @@ micromamba create --file dpctgan_environment.yaml --name <env_name>
 - Red teams may choose **any Blue Team method** to attack. However, for a selected method, predictions must be submitted for both associated synthetic datasets (TCGA‑BRCA and TCGA‑COMBINED).
 - Red teams may attack **multiple Blue Team** solutions to showcase the flexibility of their method.
 - For Blue Team solutions that are not attacked, the score will **default to the baseline attack score**, computed using the GAN-leaks method. Please submit an **empty file** with correct naming conventions for the solutions that are not attacked. 
+  - Each submission must include four prediction CSVs per dataset (eight in total).
+  - For solutions you did not attack, submit an empty CSV file (0 bytes) with the correct naming structure.
 
 
 
@@ -120,6 +122,7 @@ The following files are required for submission, for each dataset:
     - `synthetic_data_3_predictions.csv`
     - `synthetic_data_4_predictions.csv`
 4. `environment.yaml` to reproduce the experiments
+
 
 This means we expect two zip files from you, strictly in the below filename format:
 1.  `redteam_{yourteamname}_TCGA-BRCA.zip`
