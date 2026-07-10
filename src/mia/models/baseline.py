@@ -6,6 +6,9 @@ import torch
 import torch.nn.functional as F
 from scipy import stats
 from sklearn.decomposition import PCA
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.feature_selection import mutual_info_classif
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (roc_curve,
@@ -14,6 +17,7 @@ from sklearn.metrics import (roc_curve,
 
 from sklearn.utils import check_random_state
 from scipy.special import logsumexp
+
 
 
 src_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -29,7 +33,6 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 #Adapted from https://github.com/holarissun/DOMIAS/blob/main/src/domias/baselines.py
 
-
 class DOMIASBaselineModels(BaseMIAModel):
     def __init__(self, 
                  config: Dict[str, Any], 
@@ -37,6 +40,8 @@ class DOMIASBaselineModels(BaseMIAModel):
                  membership_test_file: str,
                  membership_lbl_file: str,
                  mia_experiment_name:str,
+                 generator_name:str = "",
+                 generator_experiment_name:str = "",
                  reference_file:str = None,
                  test_on_real:bool = False): ## test this as baseline.. 
         super().__init__(config, 
@@ -44,6 +49,8 @@ class DOMIASBaselineModels(BaseMIAModel):
                          membership_test_file, 
                          membership_lbl_file,
                          mia_experiment_name,
+                         generator_name,
+                         generator_experiment_name,
                          reference_file)
         
         self.test_on_real = test_on_real
@@ -175,7 +182,7 @@ def d_min(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     return np.min(d(X, Y))
 
 
-def GAN_leaks(X_test: np.ndarray, X_G: np.ndarray) -> np.ndarray:
+def GAN_leaks_original(X_test: np.ndarray, X_G: np.ndarray) -> np.ndarray:
     print("=== GAN_leaks debug ===")
     scores = np.zeros(X_test.shape[0])
     for i, x in enumerate(X_test):
@@ -185,6 +192,24 @@ def GAN_leaks(X_test: np.ndarray, X_G: np.ndarray) -> np.ndarray:
 
     
     return scores
+
+def GAN_leaks(X_test: np.ndarray, X_G: np.ndarray) -> np.ndarray:
+    """GAN-leaks membership score: higher = more member-like.
+
+    Score is the negative nearest-neighbour distance to the synthetic set,
+    -min_j ||x - X_G[j]||. The original GAN-leaks uses exp(-d_min), but in
+    high-dimensional spaces d_min is large, so exp(-d_min) underflows to 0 for
+    essentially every point and the score vector collapses (degenerate ROC).
+
+    Since the attack is scored by rank-based metrics (TPR@FPR, AUC-ROC), the
+    monotonic exp() squashing changes nothing about the ranking — so we drop it
+    and return the raw negated distance. This is numerically stable AND
+    cross-model comparable: distances live in the same feature space across all
+    generators, with no per-model rescaling (unlike a per-model median scale,
+    which would normalise away the absolute membership signal).
+    """
+    d_min_vals = np.array([d_min(x, X_G) for x in X_test])
+    return -d_min_vals
 
 
 def GAN_leaks_modified(X_test: np.ndarray, X_G: np.ndarray) -> np.ndarray:
@@ -197,7 +222,8 @@ def GAN_leaks_modified(X_test: np.ndarray, X_G: np.ndarray) -> np.ndarray:
     # Step 2: scale distances by median to avoid underflow
     scale = np.median(d_min_vals)
     
-    # Step 3: compute scores
+    # Step 3: compute scores 
+    ## scaling removes cross-model comparability but allows us to at least get non-inf scores for analysis
     scores = np.exp(-d_min_vals / scale)
     
     return scores
@@ -311,33 +337,95 @@ def run_baselines(
     score = {}
    
     score["MC"] = MC(X_test, X_G)
-    score["gan_leaks"] = GAN_leaks_modified(X_test, X_G)
-    score["conf_lr"] = downstream_confidence_attack(X_test, X_G, y_G, model_type='lr')
-    score["conf_rf"] = downstream_confidence_attack(X_test, X_G, y_G, model_type='rf')
+    score["gan_leaks"] = GAN_leaks(X_test, X_G)
+    score["gan_leaks_modified"] = GAN_leaks_modified(X_test, X_G)
+    score["gan_leaks_original"] = GAN_leaks_original(X_test, X_G)
+    score["loss_lr"] = downstream_confidence_attack(X_test, X_G, y_G, model_type='lr') #conf_lr
+    score["loss_rf"] = downstream_confidence_attack(X_test, X_G, y_G, model_type='rf') #conf_rf
   
     if X_ref is not None:
         score["LOGAN_D1"] = LOGAN_D1(X_test, X_G, X_ref)
-        score["gan_leaks_cal"] = GAN_leaks_cal(X_test, X_G, X_ref_GLC)
+        score["gan_leaks_cal"] = GAN_leaks_cal(X_test, X_G, X_ref_GLC) #log of likelihood ratio to avoid underflow
     
         ### apply PCA 
-        pca_ref = perform_pca(X_ref, n_components=150)
-        pca_test = perform_pca(X_test, n_components=150)
-        pca_synth = perform_pca(X_G, n_components=150)
+        pca_ref, pca_test, pca_synth = perform_pca(X_ref, X_test, X_G, n_components=100)
+        vDE_ref, vDE_test, vDE_synth, vDE_top_genes = get_HVG_genes(
+            X_ref, X_test, X_G, top_k=100)
+        sDE_ref, sDE_test, sDE_synth, sDE_top_genes = get_supervised_DE_genes(
+            X_ref, X_test, X_G, y_G, top_k=100)
+        dDE_ref, dDE_test, dDE_synth, dDE_top_genes = get_discriminative_genes(
+            X_ref, X_test, X_G, top_k=100)
 
-        score["domias_kde"] = kde_domias(pca_test, pca_synth, pca_ref)
-        #score["domias_bnaf"] = kde_domias(pca_test, pca_synth, pca_ref, "bnaf")
+        score["domias_kde_pca"] = kde_domias(pca_test, pca_synth, pca_ref)
+        score["domias_kde_vDE"] = kde_domias(vDE_test, vDE_synth, vDE_ref)
+        score["domias_kde_sDE"] = kde_domias(sDE_test, sDE_synth, sDE_ref)
+        score["domias_kde_dDE"] = kde_domias(dDE_test, dDE_synth, dDE_ref)
+        #score["domias_bnaf"] = kde_domias(X_test, X_G, X_ref, "bnaf")
+        score["gan_leaks_cal_pca"] = GAN_leaks_cal(pca_test, pca_synth, pca_ref)
+        score["gan_leaks_cal_vDE"] = GAN_leaks_cal(vDE_test, vDE_synth, vDE_ref)
+        score["gan_leaks_cal_sDE"] = GAN_leaks_cal(sDE_test, sDE_synth, sDE_ref)
+        score["gan_leaks_cal_dDE"] = GAN_leaks_cal(dDE_test, dDE_synth, dDE_ref)
+
+        score["LOGAN_D1_pca"] = LOGAN_D1(pca_test, pca_synth, pca_ref)
+        score["LOGAN_D1_vDE"] = LOGAN_D1(vDE_test, vDE_synth, vDE_ref)
+        score["LOGAN_D1_sDE"] = LOGAN_D1(sDE_test, sDE_synth, sDE_ref)
+        score["LOGAN_D1_dDE"] = LOGAN_D1(dDE_test, dDE_synth, dDE_ref)
+
 
 
     return score
 
 
-def perform_pca(data, n_components=2):
+def perform_pca(X_ref, X_test, X_G, n_components=300):
     pca = PCA(n_components=n_components)
     #data = StandardScaler().fit_transform(data)
-    principal_components = pca.fit_transform(data)
+    pca.fit(X_ref)
     print(np.sum(pca.explained_variance_ratio_))
+    pca_ref = pca.transform(X_ref)
+    pca_test = pca.transform(X_test)
+    pca_synth = pca.transform(X_G)
 
-    return principal_components
+    return  pca_ref, pca_test, pca_synth
+
+
+def get_HVG_genes(X_ref, X_test, X_G, top_k=500):
+    var_synth = np.var(X_G, axis=0)
+    var_ref = np.var(X_ref, axis=0)
+    # Compute variance ratio (or difference) for each gene
+    var_ratio = var_synth / (var_ref + 1e-10)  
+
+    top_genes_idx = np.argsort(var_ratio)[-top_k:]
+
+    de_G = X_G[:, top_genes_idx]
+    de_ref = X_ref[:, top_genes_idx]
+    de_test = X_test[:, top_genes_idx]  
+
+    return  de_ref, de_test, de_G, top_genes_idx
+
+def get_supervised_DE_genes( X_ref, X_test, X_G, y_G, top_k=500):
+    mi = mutual_info_classif(X_G, y_G, random_state=42)
+    top_k_idx = np.argsort(mi)[-top_k:] 
+
+    de_G = X_G[:, top_k_idx]
+    de_ref = X_ref[:, top_k_idx]
+    de_test = X_test[:, top_k_idx]  
+
+    return  de_ref, de_test, de_G, top_k_idx
+
+def get_discriminative_genes( X_ref, X_test, X_G, top_k=500):
+    X_combined = np.vstack([X_G, X_ref])
+    y_combined = np.array([1]*len(X_G) + [0]*len(X_ref))
+    lr = LogisticRegression(C=0.1, penalty='l1', solver='liblinear', random_state=42)
+    lr.fit(X_combined, y_combined)
+    top_k_idx = np.argsort(np.abs(lr.coef_[0]))[-top_k:]
+
+    de_G = X_G[:, top_k_idx]
+    de_ref = X_ref[:, top_k_idx]
+    de_test = X_test[:, top_k_idx]
+
+    return de_ref, de_test, de_G, top_k_idx
+
+
 
 def kde_domias(
             X_test: np.ndarray,

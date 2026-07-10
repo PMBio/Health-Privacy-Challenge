@@ -37,12 +37,16 @@ def cli():
 @click.argument('synthetic_file', type=click.Path(exists=True))
 @click.argument('mmb_test_file', type=click.Path(exists=True))
 @click.argument('mia_experiment_name', type=str, default="")
+@click.argument('generator_name', type=str, default="")
+@click.argument('generator_experiment_name', type=str, default="")
 @click.option('--mmb_labels_file', type=click.Path(exists=True), default=None)
 @click.option('--test_on_real', type=bool, default=False)
 @click.option('--reference_file', type=click.Path(exists=True), default=None)
 def run_mia(synthetic_file:str, 
             mmb_test_file:str, 
             mia_experiment_name:str = "",
+            generator_name:str = "",
+            generator_experiment_name:str = "",
             mmb_labels_file:str = None,
             test_on_real: bool = False, 
             reference_file:str = None):
@@ -61,6 +65,8 @@ def run_mia(synthetic_file:str,
                          mmb_test_file,
                          mmb_labels_file,
                          mia_experiment_name,
+                         generator_name,
+                         generator_experiment_name,
                          reference_file,
                          test_on_real)
     

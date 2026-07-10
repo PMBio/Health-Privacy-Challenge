@@ -17,13 +17,6 @@ class Statistics:
         return mmd
 
     @staticmethod
-    def median_heuristic(X):
-        pairwise_dists = pairwise_distances(X, metric='euclidean')
-        median_dist = np.median(pairwise_dists)
-        gamma = 1 / (2 * (median_dist ** 2))
-        return gamma
-
-    @staticmethod
     def get_mmd_score(X_train_real, synthetic_data):
         gamma = 1.0 / X_train_real.shape[1]
         K_XX = pairwise_kernels(X_train_real, X_train_real, metric='rbf', gamma=gamma)
@@ -88,6 +81,43 @@ class Statistics:
 
         
         return np.mean(kl_divergences), np.std(kl_divergences)
+    
 
+    @staticmethod
+    def median_heuristic(X):
+        pairwise_dists = pairwise_distances(X, metric='euclidean')
+        median_dist = np.median(pairwise_dists)
+        gamma = 1 / (2 * (median_dist ** 2))
+        return gamma
+    
+
+
+    @staticmethod
+    def label_based_mmd_scores(X_real, y_real, X_synthetic, y_synthetic, gamma=None):
+        """
+        Return per-label MMD values for each class present in both real and synthetic data.
+        """
+        if gamma is None:
+            gamma = 1.0 / X_real.shape[1]
+
+        labels = np.intersect1d(np.unique(y_real), np.unique(y_synthetic))
+        label_mmd = {}
+
+        for label in labels:
+            idx_real = np.where(y_real == label)[0]
+            idx_syn = np.where(y_synthetic == label)[0]
+
+
+            if len(idx_real) < 2 or len(idx_syn) < 2:
+                print(f" Skipping label {label}: {len(idx_real)} real, {len(idx_syn)} synthetic")
+                continue
+
+            K_XX = pairwise_kernels(X_real[idx_real], X_real[idx_real], metric='rbf', gamma=gamma)
+            K_YY = pairwise_kernels(X_synthetic[idx_syn], X_synthetic[idx_syn], metric='rbf', gamma=gamma)
+            K_XY = pairwise_kernels(X_real[idx_real], X_synthetic[idx_syn], metric='rbf', gamma=gamma)
+
+            label_mmd[f"submmd_{label}"] = Statistics.compute_mmd(K_XX, K_YY, K_XY)
+
+        return label_mmd
 
     

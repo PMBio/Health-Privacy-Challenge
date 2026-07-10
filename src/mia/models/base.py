@@ -23,12 +23,14 @@ class BaseMIAModel(ABC):
                 membership_test_file: str,
                 membership_lbl_file: str,
                 mia_experiment_name:str,
+                generator_name:str = "",
+                generator_experiment_name:str = "",
                 reference_file:str = None):
         self.config = config
         self.home_dir = config["dir_list"]["home"]
         #self.results_dir = config["dir_list"]["mia_files"]
-        self.generator_model = self.config["generator_config"]["name"]
-        self.experiment_name = self.config["generator_config"]["experiment_name"]
+        self.generator_model = generator_name #self.config["generator_config"]["name"]
+        self.experiment_name = generator_experiment_name #self.config["generator_config"]["experiment_name"]
         self.attack_model =  self.config["attack_model"]
         self.dataset_config = config["dataset_config"]
         self.dataset_name = self.dataset_config["name"]
@@ -42,9 +44,9 @@ class BaseMIAModel(ABC):
                                         config["dir_list"]["mia_files"], 
                                         self.dataset_name, 
                                         self.attack_model,
-                                        self.generator_model,
-                                        self.experiment_name,
-                                        mia_experiment_name
+                                        #self.generator_model,
+                                        #self.experiment_name,
+                                        mia_experiment_name ##test again without this 
                                     )
         check_folder(self.results_save_dir)
         config_key = f"{self.attack_model}_config"

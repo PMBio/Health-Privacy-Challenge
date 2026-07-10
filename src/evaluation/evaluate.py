@@ -21,6 +21,7 @@ sys.path.append(src_dir)
 from evaluation.utils.data_handler import EvaluationDataLoader
 from evaluation.utils.stats import Statistics
 from evaluation.utils.plots import Plotting
+from evaluation.utils.prdc import PRDensityCoverage
 
 
 def check_dirs(path):
@@ -28,17 +29,23 @@ def check_dirs(path):
         os.makedirs(path)
 
 class BaseEvaluator:
-    def __init__(self, config, split_no):
+    def __init__(self, 
+                 config, 
+                 split_no, 
+                 generator_name=None, 
+                 experiment_name=None):
         self.config = config
         self.split_no = split_no
+        self.generator_name = generator_name
+        self.experiment_name = experiment_name
         home_dir = config["dir_list"]["home"]
         self.dataset_name = config["dataset_config"]["name"]
         self.save_dir = os.path.join(home_dir, "data_splits")
         self.random_seed = config["evaluator_config"]["random_seed"]
 
         ## experiment name
-        self.experiment_name = self.config['generator_config']['experiment_name']
-        self.generator_name = self.config['generator_config']['name']
+        #self.experiment_name = self.config['generator_config']['experiment_name']
+        #self.generator_name = self.config['generator_config']['name']
         self.res_figures_dir = os.path.join(home_dir, 
                                             config["dir_list"]["figures"], 
                                             self.dataset_name, 
@@ -82,8 +89,9 @@ class BaseEvaluator:
     @staticmethod
     def combine_csv_files(results_files, output_file):
         combined_df = pd.concat([pd.read_csv(f) for f in results_files], ignore_index=True)
-        
-        summary_df = pd.DataFrame({
+        mmd_label_cols = [col for col in combined_df.columns if col.startswith('submmd_')]
+
+        summary_dict = {
             'split_no': ['average'],
             'accuracy_synthetic': [combined_df['accuracy_synthetic'].mean()],
             'avg_pr_macro_synthetic': [combined_df['avg_pr_macro_synthetic'].mean()],
@@ -97,14 +105,26 @@ class BaseEvaluator:
             'auroc_real': [combined_df['auroc_real'].mean()],
             'feature_overlap_count': [combined_df['feature_overlap_count'].mean()],
             'feature_overlap_proportion': [combined_df['feature_overlap_proportion'].mean()],
-            'MMD_score': [combined_df['MMD_score'].mean()],
+            'MMD_train': [combined_df['MMD_train'].mean()],
+            'MMD_test': [combined_df['MMD_test'].mean()],
+            'MMD_base': [combined_df['MMD_base'].mean()],
             'discriminative_score': [combined_df['discriminative_score'].mean()],
             'distance_to_closest': [combined_df['distance_to_closest'].mean()],
             'distance_to_closest_base': [combined_df['distance_to_closest_base'].mean()],
             'kl_mean_train': [combined_df['kl_mean_train'].mean()],
-            'kl_mean_test': [combined_df['kl_mean_test'].mean()]
-        })
+            'kl_mean_test': [combined_df['kl_mean_test'].mean()], 
+            'kl_mean_base': [combined_df['kl_mean_base'].mean()],
+            'prdc_precision': [combined_df['prdc_precision'].mean()],
+            'prdc_recall': [combined_df['prdc_recall'].mean()],
+            'prdc_density': [combined_df['prdc_density'].mean()],
+            'prdc_coverage': [combined_df['prdc_coverage'].mean()]
 
+        }
+        # Add per-label MMD averages
+        for col in mmd_label_cols:
+            summary_dict[col] = [combined_df[col].mean()]
+
+        summary_df = pd.DataFrame(summary_dict)
         combined_df = pd.concat([combined_df, summary_df], ignore_index=True)
         combined_df.to_csv(output_file, index=False)
 
@@ -233,15 +253,38 @@ class ModelEvaluator(BaseEvaluator):
         overlap_count, overlap_proportion = Statistics.count_feature_overlap(ifeat_synthetic, ifeat_real)
         avg_distance = Statistics.distance_to_the_closest_neighbor(X_train_real, synthetic_data)
         avg_distance_base = Statistics.distance_to_the_closest_neighbor(X_train_real, X_test_real)
-        mmd_score = Statistics.get_mmd_score(X_train_real, synthetic_data)
         disc_score = self.discriminative_score(synthetic_data, X_train_real, X_test_real)
+        ### MMD
+        train_mmd_score = Statistics.get_mmd_score(X_train_real, synthetic_data)
+        test_mmd_score = Statistics.get_mmd_score(X_test_real, synthetic_data)
+        base_mmd_score = Statistics.get_mmd_score(X_test_real, X_train_real)
+        ## label-based MMD
+        train_mmd_score_label = Statistics.label_based_mmd_scores(X_train_real, y_train_real, 
+                                                synthetic_data, y_synthetic=synthetic_labels)
+        # how to save this to csv nicely? right now it's a list
 
+
+        ### KL 
         train_kl_mean, _ = Statistics.compute_kl_divergences(
             synthetic_data, X_train_real
         )
         test_kl_mean, _ = Statistics.compute_kl_divergences(
             synthetic_data, X_test_real
         )
+        base_test_kl_mean, _ = Statistics.compute_kl_divergences( ## to compare against..
+            X_train_real, X_test_real
+        )
+        prdc_metrics_train = PRDensityCoverage.compute_prdc(
+            real_features=X_train_real,
+            fake_features=synthetic_data,
+            nearest_k=5
+        )
+        prdc_metrics_test = PRDensityCoverage.compute_prdc(
+            real_features=X_test_real,
+            fake_features=synthetic_data,
+            nearest_k=5
+        )
+
 
         #### add here....
         return {
@@ -258,12 +301,22 @@ class ModelEvaluator(BaseEvaluator):
             'auroc_real': auroc_real,
             'feature_overlap_count': overlap_count,
             'feature_overlap_proportion': overlap_proportion,
-            'MMD_score': mmd_score,
+            'MMD_train': train_mmd_score,
+            'MMD_test': test_mmd_score,
+            'MMD_base': base_mmd_score,
             'discriminative_score': disc_score,
             'distance_to_closest': avg_distance,
             'distance_to_closest_base': avg_distance_base,
             'kl_mean_train': train_kl_mean,
-            'kl_mean_test': test_kl_mean
+            'kl_mean_test': test_kl_mean,
+            'kl_mean_base': base_test_kl_mean,
+            'prdc_precision': prdc_metrics_train['precision'],
+            'prdc_recall': prdc_metrics_train['recall'],
+            'prdc_density': prdc_metrics_train['density'],
+            'prdc_coverage': prdc_metrics_train['coverage'],
+            'prdc_density_test': prdc_metrics_test['density'],
+            'prdc_coverage_test': prdc_metrics_test['coverage'],
+            **train_mmd_score_label
         }
 
 
@@ -280,11 +333,16 @@ def cli():
 ### results/files/{dataset_name}/{model_name}/{experiment_name}
 @click.command()
 @click.argument('split-no', type=int, default=1)
-def run_evaluator(split_no: int):
+@click.argument('generator_name', type=str, default=None)
+@click.argument('experiment_name', type=str, default=None)
+def run_evaluator(split_no: int, generator_name: str, experiment_name: str):
     with open("config.yaml", 'r') as file:
         config = yaml.safe_load(file)
     
-    evaluator = ModelEvaluator(config=config, split_no=split_no)
+    evaluator = ModelEvaluator(config=config, 
+                               split_no=split_no, 
+                               generator_name=generator_name, 
+                               experiment_name=experiment_name)
     results = evaluator.run_train_and_evaluate(split_no=split_no)
     
     output_file = os.path.join(evaluator.res_files_dir, f"evaluation_split_{split_no}.csv")
@@ -293,10 +351,15 @@ def run_evaluator(split_no: int):
 
 
 @click.command()
-def combine_results():
+@click.argument('generator_name', type=str, default=None)
+@click.argument('experiment_name', type=str, default=None)
+def combine_results(generator_name: str, experiment_name: str):
     with open("config.yaml", 'r') as file:
         config = yaml.safe_load(file)
-    evaluator = ModelEvaluator(config=config, split_no=0)
+    evaluator = ModelEvaluator(config=config, 
+                               split_no=0, 
+                               generator_name=generator_name, 
+                               experiment_name=experiment_name)
     #results_files = [os.path.join(evaluator.res_files_dir, f) 
     #                 for f in os.listdir(evaluator.res_files_dir,) if f.endswith('.csv')]
     results_files = [os.path.join(evaluator.res_files_dir, f) 
@@ -309,14 +372,19 @@ def combine_results():
 
 @click.command()
 @click.argument('cutoff', type=float, default=0.0)
-def combine_coexpress_results(cutoff):
+@click.argument('generator_name', type=str, default=None)
+@click.argument('experiment_name', type=str, default=None)
+def combine_coexpress_results(cutoff, generator_name, experiment_name):
     with open("config.yaml", 'r') as file:
         config = yaml.safe_load(file)
-    evaluator = ModelEvaluator(config=config, split_no=0)
+    evaluator = ModelEvaluator(config=config, 
+                               split_no=0, 
+                               generator_name=generator_name, 
+                               experiment_name=experiment_name)
     results_files = [
         os.path.join(evaluator.bio_files_dir, f)
         for f in os.listdir(evaluator.bio_files_dir)
-        if fnmatch.fnmatch(f, f"coexpr_*{cutoff}_split*.csv")
+        if fnmatch.fnmatch(f, f"coexpr_*{cutoff:g}_split*.csv")
     ]
 
     print(results_files)
@@ -344,15 +412,20 @@ def combine_coexpress_results(cutoff):
 
 @click.command()
 @click.argument('lfc_threshold', type=float, default=0)
-def combine_diffexpress_results(lfc_threshold):
+@click.argument('generator_name', type=str, default=None)
+@click.argument('experiment_name', type=str, default=None)
+def combine_diffexpress_results(lfc_threshold, generator_name, experiment_name):
     with open("config.yaml", 'r') as file:
         config = yaml.safe_load(file)
-    evaluator = ModelEvaluator(config=config, split_no=0)
+    evaluator = ModelEvaluator(config=config, 
+                               split_no=0, 
+                               generator_name=generator_name, 
+                               experiment_name=experiment_name)
     for kyw in ['tpr', 'fpr']:
         results_files = [
             os.path.join(evaluator.bio_files_dir, f)
             for f in os.listdir(evaluator.bio_files_dir)
-            if fnmatch.fnmatch(f, f"DE_*{lfc_threshold:g}_split*_{kyw}.csv")
+            if fnmatch.fnmatch(f, f"DE_*{lfc_threshold:.1f}_split*_{kyw}.csv")
         ]
 
         print(results_files)
@@ -378,20 +451,123 @@ def combine_diffexpress_results(lfc_threshold):
         logging.info("Cleanup completed.")
 
 
+@click.command()
+@click.argument('generator_name', type=str, default=None)
+@click.argument('experiment_name', type=str, default=None)
+def combine_pathway_results(generator_name, experiment_name):
+    with open("config.yaml", 'r') as f:
+        config = yaml.safe_load(f)
+
+    evaluator = ModelEvaluator(
+        config=config,
+        split_no=0,
+        generator_name=generator_name,
+        experiment_name=experiment_name
+    )
+
+    results_files = [
+        os.path.join(evaluator.bio_files_dir, f)
+        for f in os.listdir(evaluator.bio_files_dir)
+        if fnmatch.fnmatch(f, "pathway_metrics_split_*.csv")
+    ]
+
+    if not results_files:
+        logging.warning("No pathway metrics files found.")
+        return
+
+    print(results_files)
+
+    combined_df = pd.concat(
+        [
+            pd.read_csv(f).assign(
+                fold=int(re.search(r"_split_(\d+)", f).group(1))
+            )
+            for f in results_files
+        ],
+        ignore_index=True
+    )
+
+    out_path = os.path.join(evaluator.bio_files_dir, "pathway_metrics_results.csv")
+    combined_df.to_csv(out_path, index=False)
+    logging.info(f"Saved combined pathway metrics to {out_path}")
+
+    for f in results_files:
+        if os.path.exists(f):
+            os.remove(f)
+    logging.info("Cleanup completed.")
+
+
+
+
+@click.command()
+@click.argument('lfc_threshold', type=float, default=0.0)
+@click.argument('generator_name', type=str, default=None)
+@click.argument('experiment_name', type=str, default=None)
+def combine_enrichment_results(lfc_threshold, generator_name, experiment_name):
+    with open("config.yaml", 'r') as file:
+        config = yaml.safe_load(file)
+    evaluator = ModelEvaluator(config=config, 
+                               split_no=0, 
+                               generator_name=generator_name, 
+                               experiment_name=experiment_name)
+
+    # Define the patterns to combine
+    file_patterns = {
+       # "enrichment": f"DE_enrichment_lfc={lfc_threshold:g}_split_*.csv",
+        "gene_counts": f"DE_gene_counts_lfc={lfc_threshold:.1f}_split_*.csv"
+    }
+
+    for key, pattern in file_patterns.items():
+        results_files = [
+            os.path.join(evaluator.bio_files_dir, f)
+            for f in os.listdir(evaluator.bio_files_dir)
+            if fnmatch.fnmatch(f, pattern)
+        ]
+
+        print(f"Combining {key} files: {results_files}")
+
+        if not results_files:
+            logging.warning(f"No files found for pattern {pattern}, skipping.")
+            continue
+
+        combined_df = pd.concat(
+            [
+                pd.read_csv(f).assign(
+                    fold=int(re.search(r"_split_(\d+)", f).group(1))
+                )
+                for f in results_files
+            ],
+            ignore_index=True
+        )
+
+        out_file = os.path.join(
+            evaluator.bio_files_dir,
+            f"DE_{key}_lfc={lfc_threshold}_results.csv"
+        )
+        combined_df.to_csv(out_file, index=False)
+        print(f"Wrote combined {key} results to {out_file}")
+
+        # Optional: cleanup split files
+        for f in results_files:
+            if os.path.exists(f):
+                os.remove(f)
+        logging.info(f"Cleanup of {key} split files completed.")
 
 ### function runs for an individual split
 ### results are saved under
 ### results/figures/{dataset_name}/{model_name}/{experiment_name}
 @click.command()
 @click.argument('split_no', type=int, default=1)
-def plot_pca(split_no: int):
+@click.argument('generator_name', type=str, default=None)
+@click.argument('experiment_name', type=str, default=None)
+def plot_pca(split_no: int, generator_name: str, experiment_name: str):
     with open("config.yaml", 'r') as file:
         config = yaml.safe_load(file)
 
-    base_eval = BaseEvaluator(config, split_no)
+    base_eval = BaseEvaluator(config, split_no, generator_name, experiment_name)
     synthetic_data, _,  X_train_real, _, _, _ = base_eval.data_loader.load_data()
     
-    # Combine real + synthetic or fit on real first
+    # Combine real + synthetic or fit on realrun-evaluator  first
     real_pca_df, fitted_scaler, fitted_pca = Plotting.perform_pca(X_train_real)
 
     # Apply the same scaler and PCA to synthetic
@@ -409,6 +585,8 @@ cli.add_command(combine_results)
 cli.add_command(plot_pca)
 cli.add_command(combine_coexpress_results)
 cli.add_command(combine_diffexpress_results)
+cli.add_command(combine_enrichment_results)
+cli.add_command(combine_pathway_results)
 
 if __name__ == '__main__':
     cli()
