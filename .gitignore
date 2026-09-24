@@ -10,6 +10,7 @@ data/raw/
 data/red_team_test*/
 data/meta/
 data/processed/
+presentation*/
 results/
 results_*/
 .snakemake/

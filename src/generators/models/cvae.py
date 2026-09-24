@@ -22,9 +22,10 @@ from generators.models.base import BaseDataGenerator
 # the script sometimes get abruptly killed without this
 # it may be driver specific and as such, this case may not apply to you.
 if torch.cuda.is_available:
-    print(torch.cuda.is_available())
     torch.cuda.current_device()
     _ = torch.tensor([0.], device='cuda')  # force context init
+    #print(torch.cuda.get_arch_list())
+    #print(torch.cuda.get_device_capability())
 
 
 @click.group()

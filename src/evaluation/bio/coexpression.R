@@ -17,7 +17,7 @@ dataset_name <- args[3]
 generator_name <- args[4]
 param_dir <- args[5]
 hcocena_dir <- args[6]
-cutoff <- as.numeric(args[7])
+cutoff <- as.double(args[7])
 ### this is co-expression cutoff
 
 bio_res_dir <- file.path(home_dir, "results/bio", dataset_name, generator_name)
@@ -219,6 +219,8 @@ for (i in 1:length(hcobject$layers)) {
   ))
 }
 
+print(length(edges_real))
+
 coex_rec <- coex_rec[order(coex_rec$correctly_rec, decreasing = T), ]
 coex_rec$set <- factor(coex_rec$set, levels = rev(coex_rec$set))
 reference <- dplyr::filter(coex_rec, set == "real")$correctly_rec
@@ -245,9 +247,10 @@ if (!dir.exists(output_dir)) {
 
 
 ## save coexpression file
+cutoff_str <- sprintf("%.1f", cutoff)
 output_file <- file.path(
   output_dir,
-  paste0("coexpr_cutoff=", cutoff, "_split_", split_no, ".csv")
+  paste0("coexpr_cutoff=", cutoff_str, "_split_", split_no, ".csv")
 )
 write.csv(coex_rec_summary, paste0(output_file))
 

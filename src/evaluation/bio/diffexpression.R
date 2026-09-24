@@ -8,6 +8,7 @@ library(ggplot2)
 # Towards Biologically Plausible and Private Gene Expression Data Generation
 # Chen, Oestreich, & Afonja et al. 2024
 
+
 args <- commandArgs(trailingOnly = TRUE)
 home_dir <- args[1]
 split_no <- as.integer(args[2])
@@ -16,6 +17,7 @@ generator_name <- args[4]
 param_dir <- args[5]
 p_value_th <- as.double(args[6])
 lfc_th <- as.double(args[7])
+
 
 real_data_dir <- file.path(home_dir, "data_splits", dataset_name, "real")
 synthetic_data_dir <- file.path(
@@ -68,6 +70,8 @@ colnames(synthetic_annots) <- gsub(
   "cancer_type",
   "Subtype", colnames(real_annots)
 )
+
+
 rownames(synthetic_annots) <- paste0("P", seq_len(nrow(synthetic_annots)))
 
 # Load means and standard deviations for reverse standardization
@@ -81,6 +85,7 @@ synthetic_data <- as.data.frame(synthetic_data)
 
 real_data <- t(real_data)
 real_data <- as.data.frame(real_data)
+
 
 # reverse standardization to get original counts
 # means <- scaling_params$mean
@@ -129,12 +134,19 @@ for (i in 1:length(datasets)) {
 
   res <- list()
   for (j in 1:length(pairs)) {
-    signif_up <- rownames(dplyr::filter(
-      as.data.frame(up[["statistics"]][[j]]), p.value < p_value_th
-    ))
-    signif_down <- rownames(dplyr::filter(
-      as.data.frame(down[["statistics"]][[j]]), p.value < p_value_th
-    ))
+    ## adding multiple test correction
+    tab_up <- as.data.frame(up[["statistics"]][[j]])
+    tab_up$padj <- p.adjust(tab_up$p.value, method = "BH")
+    signif_up <- rownames(tab_up)[tab_up$padj < p_value_th]
+    #######
+    # signif_up <- rownames(dplyr::filter(as.data.frame(up[["statistics"]][[j]]), p.value < p_value_th))
+    ## adding multiple test correction
+    ## Now p_value_th becomes an FDR threshold (0.05).
+    tab_down <- as.data.frame(down[["statistics"]][[j]])
+    tab_down$padj <- p.adjust(tab_down$p.value, method = "BH")
+    signif_down <- rownames(tab_down)[tab_down$padj < p_value_th]
+    #####
+    # signif_down <- rownames(dplyr::filter(as.data.frame(down[["statistics"]][[j]]), p.value < p_value_th))
     res[[pairs[j]]][["up"]] <- signif_up
     res[[pairs[j]]][["down"]] <- signif_down
   }
@@ -329,43 +341,22 @@ if (!dir.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
 }
 
-output_file <- file.path(output_dir, paste0("DE_lfc=", lfc_th, "_split_", split_no))
+lfc_str <- formatC(lfc_th, format = "f", digits = 1)
+print(lfc_str)
+output_file <- file.path(output_dir, paste0("DE_lfc=", lfc_str, "_split_", split_no))
 write.csv(plot_fpr, paste0(output_file, "_fpr.csv"))
 write.csv(plot_tpr, paste0(output_file, "_tpr.csv"))
 
 
-plot_df <- data.frame()
-for (n in names(DE_correct)) {
-  n_clean <- strsplit(n, "_vs_")[[1]][1] %>% str_replace(., "_", " ")
+# Summarize DE gene counts
+de_summary <- summarize_de_genes(DE_genes, unique_comparisons)
 
-  tmp <- data.frame(
-    correct = DE_correct[[n]] %>% unlist(),
-    direction = rep(c("up", "down"),
-      each = length(unique_comparisons)
-    ),
-    comparison = paste0(n_clean, " ", rep(c("up", "down"),
-      each = length(unique_comparisons)
-    ))
+# Optionally save the summary
+summary_output_file <- file.path(
+  output_dir,
+  paste0(
+    "DE_gene_counts_lfc=", lfc_str,
+    "_split_", split_no, ".csv"
   )
-  plot_df <- rbind(plot_df, tmp)
-}
-plot_df <- dplyr::filter(plot_df, !comparison %in% c("real up", "real down"))
-
-
-# p <- ggplot() +
-#  geom_boxplot(data = plot_df, aes(x = comparison, y = correct, fill = direction)) +
-#  theme_bw() +
-#  ylim(c(0, 1)) +
-#  scale_fill_manual(values = rep(
-#    c("#999999", "#e3e3e3"),
-#    2 * length(datasets)
-#  )) + # hcobject$layers_names
-#  ggtitle(paste0("DE-Gene Preservation, split=", split_no)) +
-#  theme(axis.text.x = element_text(angle = 90)) +
-#  ylab("Correctly reconstructed DE genes \n across class comparisons [%]") +
-#  xlab("")
-
-# ggsave(
-#  file = paste0(output_file, "_DE-genes.png"), bg = "transparent",
-#  plot = p, width = 10, height = 6, dpi = 300
-# )
+)
+write.csv(de_summary, summary_output_file, row.names = FALSE)

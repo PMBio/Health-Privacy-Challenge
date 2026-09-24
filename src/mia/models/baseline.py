@@ -52,7 +52,7 @@ class DOMIASBaselineModels(BaseMIAModel):
                          generator_name,
                          generator_experiment_name,
                          reference_file)
-        
+        ## if the real dataset is used 
         self.test_on_real = test_on_real
         self.random_seed = config["dataset_config"]["random_seed"]
 
@@ -72,18 +72,14 @@ class DOMIASBaselineModels(BaseMIAModel):
                                                             self.dataset_name)
         else:
             synthetic_data, synthetic_labels = data_loader.load_synthetic_data()
-            ## need synthetic labels 
-            
-                    # Decide whether to align real data
 
-        print("inside domaias baselines")
-        print(synthetic_data.shape[1])
+        # Decide whether to align real data
         if synthetic_data.shape[1] < 978:  # or X_train_real.shape[1] if known
             align_to_synthetic = synthetic_data
         else:
             align_to_synthetic = None
 
-        print(synthetic_data.shape[1])
+
         X_test = data_loader.load_membership_dataset(align_to_synthetic)
         y_test = data_loader.load_membership_labels()
 
@@ -183,11 +179,11 @@ def d_min(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
 
 
 def GAN_leaks_original(X_test: np.ndarray, X_G: np.ndarray) -> np.ndarray:
-    print("=== GAN_leaks debug ===")
+    #print("=== GAN_leaks debug ===")
     scores = np.zeros(X_test.shape[0])
     for i, x in enumerate(X_test):
         scores[i] = np.exp(-d_min(x, X_G))
-        print("d_min:", d_min(x, X_G))
+        #print("d_min:", d_min(x, X_G))
         assert not np.isinf(scores[i]), f"Found inf: -d_min = {-d_min(x, X_G)}"
 
     
@@ -202,9 +198,9 @@ def GAN_leaks(X_test: np.ndarray, X_G: np.ndarray) -> np.ndarray:
     essentially every point and the score vector collapses (degenerate ROC).
 
     Since the attack is scored by rank-based metrics (TPR@FPR, AUC-ROC), the
-    monotonic exp() squashing changes nothing about the ranking — so we drop it
-    and return the raw negated distance. This is numerically stable AND
-    cross-model comparable: distances live in the same feature space across all
+    monotonic exp() squashing changes nothing about the ranking. We drop it
+    and return the raw negated distance. This is numerically stable and
+    cross-model comparable. Distances live in the same feature space across all
     generators, with no per-model rescaling (unlike a per-model median scale,
     which would normalise away the absolute membership signal).
     """
@@ -233,21 +229,21 @@ def GAN_leaks_modified(X_test: np.ndarray, X_G: np.ndarray) -> np.ndarray:
 
 def MC(X_test: np.ndarray, X_G: np.ndarray) -> np.ndarray:
 
-    print("=== MC debug ===")
+    #print("=== MC debug ===")
     scores = np.zeros(X_test.shape[0])
     distances = np.zeros((X_test.shape[0], X_G.shape[0]))
-    print(f"distances shape: {distances.shape}")
+    #print(f"distances shape: {distances.shape}")
     for i, x in enumerate(X_test):
         distances[i] = d(x, X_G)
     # median heuristic (Eq. 4 of Hilprecht)
     min_dist = np.min(distances, 1)
-    print(f"min_dist stats: mean {np.mean(min_dist)} median {np.median(min_dist)} min {np.min(min_dist)} max {np.max(min_dist)}")
+    #print(f"min_dist stats: mean {np.mean(min_dist)} median {np.median(min_dist)} min {np.min(min_dist)} max {np.max(min_dist)}")
     assert min_dist.size == X_test.shape[0]
     epsilon = np.percentile(min_dist, 10) #np.median(min_dist)
 
-    print(f"epsilon: {epsilon}")
-    print("distances mean:", np.mean(distances))
-    print("first 10 min_dist: {min_dist[:10]}")
+    #print(f"epsilon: {epsilon}")
+    #print("distances mean:", np.mean(distances))
+    #print("first 10 min_dist: {min_dist[:10]}")
 
     for i, x in enumerate(X_test):
         scores[i] = np.sum(distances[i] < epsilon)
@@ -338,8 +334,8 @@ def run_baselines(
    
     score["MC"] = MC(X_test, X_G)
     score["gan_leaks"] = GAN_leaks(X_test, X_G)
-    score["gan_leaks_modified"] = GAN_leaks_modified(X_test, X_G)
-    score["gan_leaks_original"] = GAN_leaks_original(X_test, X_G)
+    #score["gan_leaks_modified"] = GAN_leaks_modified(X_test, X_G)
+    #score["gan_leaks_original"] = GAN_leaks_original(X_test, X_G)
     score["loss_lr"] = downstream_confidence_attack(X_test, X_G, y_G, model_type='lr') #conf_lr
     score["loss_rf"] = downstream_confidence_attack(X_test, X_G, y_G, model_type='rf') #conf_rf
   
@@ -433,7 +429,7 @@ def kde_domias(
             reference_set: np.ndarray,
             density_estimator:str = "kde"):
   
-    # BNAF was memory intensive and couldnt be tested 
+    # BNAF was memory intensive and could not be tested 
     # BNAF for pG
     if density_estimator == "bnaf":
         _, p_G_model = density_estimator_trainer(
