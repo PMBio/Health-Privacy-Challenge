@@ -2,7 +2,6 @@
 __pycache__/
 *.py[cod]
 *$py.class
-*.ipynb
 *.csv
 
 # data directory
@@ -25,7 +24,10 @@ data_splits/onek1k/
 qrcode/
 src/prepare_data/
 src/generators/utils/prepare_data_master.py
-notebooks/
+notebooks/*
+paper/figures/
+paper/results/run*
+downloads/
 
 # C extensions
 *.so
