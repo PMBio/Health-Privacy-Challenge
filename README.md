@@ -33,9 +33,9 @@ The **2025 Blue Team submissions** are the generative methods under analysis in 
 **Participant methods included** (code archived by the authors; cite their DOIs):
 | Method | Authors | DOI |
 |--------|---------|-----|
+| DP-PGM | Pentyala et al. 2026 | [Github](https://github.com/sikhapentyala/Health-Privacy-Challenge/tree/main/submission) |
 | Embedded-Diffusion | Kreuer. 2026 | [zenodo.22693680]( https://doi.org/10.5281/zenodo.22693680) |
 | NMF / P-NMF | Wicks. 2026 | [zenodo.22818979](https://doi.org/10.5281/zenodo.22818979 ) |
-| DP-PGM | Pentyala et al. 2026 | [Github](https://github.com/sikhapentyala/Health-Privacy-Challenge/tree/main/submission) |
 
 Follow their instructions for model training and generation. 
 
@@ -54,7 +54,7 @@ The paper also introduces additional metrics beyond the challenge scoring. Repro
 
 
 
-### Paper Datasets
+## Datasets
  
  We re-distribute pre-processed versions of two open-access TCGA RNA-seq datasets, available through the  [GDC portal](https://gdc.cancer.gov); use follows the [NIH Data
 Access Policy](https://gdc.cancer.gov/access-data/data-access-policies) and TCGA citation guidelines.
@@ -63,7 +63,7 @@ Access Policy](https://gdc.cancer.gov/access-data/data-access-policies) and TCGA
 - Datasets are also available for download in [ELSA Benchmarks  Platform](https://benchmarks.elsa-ai.eu/?ch=8&com=introduction) after registration.
 
 
-### Reproducing the paper
+## Reproducing the paper
  
 **Figures only.** The paper's results are frozen in
 `paper/results/` and the `paper_figures.ipynb` regenerates tables and figures from them:
@@ -76,6 +76,7 @@ Access Policy](https://gdc.cancer.gov/access-data/data-access-policies) and TCGA
 **Regenerate from the scratch (cluster version).** Prepare the data, run the generative
 methods and evaluation (including baseline MIA), then compile the results in the notebook. This assumes 
 the code runs on SLURM cluster (Use GPU for training if available). 
+
 Each dataset has its own config (`config_brca.yaml`, `config_combined.yaml`); run the steps once per
 dataset by pointing at the relevant config.
 
@@ -83,13 +84,12 @@ dataset by pointing at the relevant config.
 ```bash
 # 1. data prep (per dataset)
 python src/prepare/fetch_data.py                            # pull + verify + extract from Zenodo
-python src/prepare/split_data.py --config submit_jobs/config_brca.yaml       # folds + MIA membership labels
-python src/prepare/split_data.py --config submit_jobs/config_combined.yaml
+python src/prepare/split_data.py --config submit_jobs/config-brca.yaml       # folds + MIA membership labels
+python src/prepare/split_data.py --config submit_jobs/config-combined.yaml
  
 
 # 2. generate synthetic data (SLURM job arrays, per dataset)
-bash submit_jobs/submit_generators.sh submit_jobs/config_brca.yaml
-bash submit_jobs_submit_generators.sh submit_jobs/config_combined.yaml
+bash submit_jobs/submit_generators.sh submit_jobs/config-brca.yaml
  
 # 3. Eval in progress.. 
 ```
@@ -108,7 +108,11 @@ This code-base evolved with the challenges and its accompaniying paper. Each edi
  
 
 ## License
+Code is licensed under **BSD-3-Clause** (see [`LICENSE`](LICENSE)). Data terms are
+stated on the Zenodo deposit (derived from public TCGA gene expression; see
+[Data](#data)).
  
+
 
 
 

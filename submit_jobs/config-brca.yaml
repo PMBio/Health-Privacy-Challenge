@@ -17,6 +17,7 @@ dataset_config:
   annot_file: "data/meta/TCGA-BRCA_primary_tumor_subtypes.csv" 
   sample_col_name: "samplesID" 
   subtype_col_name: "Subtype" 
+  label_source_col: Subtype   
   num_splits: 5
   random_seed: 42
   membership_label_col: "membership_label"

@@ -48,6 +48,19 @@ class RealDataLoader:
         if not self.original_lbl_path.exists():
             raise FileNotFoundError(f"Labels file is missing: {self.original_lbl_path}")
         self.subtype_labels = pd.read_csv(self.original_lbl_path)
+        
+        # COMBINED: the fine-grained label lives in `project`, but downstream expects
+        # it under `cancer_type` (which in this annotation file holds coarse tissue
+        # names). Overwrite cancer_type with the project-derived label, keeping the
+        # column name so downstream (subtype_col_name = cancer_type) is unchanged.
+        source_col = self.config["dataset_config"].get("label_source_col")
+        if source_col and source_col != self.subtype_col_name:
+            if source_col not in self.subtype_labels.columns:
+                raise ValueError(
+                    f"label_source_col '{source_col}' not in labels file; "
+                    f"have {list(self.subtype_labels.columns)}"
+                )
+            self.subtype_labels[self.subtype_col_name] = self.subtype_labels[source_col]
 
         indexed = self.subtype_labels.set_index(self.sample_col_name)
         # guard: every data sample must have exactly one label

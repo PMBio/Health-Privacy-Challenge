@@ -18,6 +18,7 @@ dataset_config:
   annot_file: "data/meta/TCGA-COMBINED_primary_tumor_subtypes.csv" 
   sample_col_name: "samplesID" 
   subtype_col_name: "cancer_type" 
+  label_source_col: "project"   
   num_splits: 5
   random_seed: 42
 
