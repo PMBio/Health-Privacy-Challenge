@@ -42,6 +42,7 @@ def cli():
 @click.option('--mmb_labels_file', type=click.Path(exists=True), default=None)
 @click.option('--test_on_real', type=bool, default=False)
 @click.option('--reference_file', type=click.Path(exists=True), default=None)
+@click.option('--configfile', type=str, default="config.yaml")
 def run_mia(synthetic_file:str, 
             mmb_test_file:str, 
             mia_experiment_name:str = "",
@@ -49,9 +50,9 @@ def run_mia(synthetic_file:str,
             generator_experiment_name:str = "",
             mmb_labels_file:str = None,
             test_on_real: bool = False, 
-            reference_file:str = None):
+            reference_file:str = None,
+            configfile: str = "config.yaml"):
     # Load the config file
-    configfile = "config.yaml"
     config = yaml.safe_load(open(configfile))
 
     attack_model = config.get('attack_model')

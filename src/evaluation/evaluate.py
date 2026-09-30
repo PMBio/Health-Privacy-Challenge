@@ -336,8 +336,9 @@ def cli():
 @click.argument('split-no', type=int, default=1)
 @click.argument('generator_name', type=str, default=None)
 @click.argument('experiment_name', type=str, default=None)
-def run_evaluator(split_no: int, generator_name: str, experiment_name: str):
-    with open("config.yaml", 'r') as file:
+@click.option('--configfile', type=str, default="config.yaml")
+def run_evaluator(split_no: int, generator_name: str, experiment_name: str, configfile: str):
+    with open(configfile, 'r') as file:
         config = yaml.safe_load(file)
     
     evaluator = ModelEvaluator(config=config, 
@@ -354,9 +355,11 @@ def run_evaluator(split_no: int, generator_name: str, experiment_name: str):
 @click.command()
 @click.argument('generator_name', type=str, default=None)
 @click.argument('experiment_name', type=str, default=None)
-def combine_results(generator_name: str, experiment_name: str):
-    with open("config.yaml", 'r') as file:
+@click.option('--configfile', type=str, default="config.yaml")
+def combine_results(generator_name: str, experiment_name: str, configfile: str):
+    with open(configfile, 'r') as file:
         config = yaml.safe_load(file)
+        
     evaluator = ModelEvaluator(config=config, 
                                split_no=0, 
                                generator_name=generator_name, 
