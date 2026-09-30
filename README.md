@@ -6,11 +6,7 @@ This repository holds the code and documentation for the [Health Privacy Challen
 
 <!-- When a new edition opens, replace the line above with, e.g.:
      **Active edition:** running in 2027 → see the [`2027`](link) branch. -->
-**Jump to:** [Challenge tracks](#challenge-tracks) · [Paper](#paper) ([Data](#data) · [Reproducing](#reproducing-the-paper)) · [Editions & branches](#editions)
- 
-> [!NOTE]
-> Code and documentation only. See [Data](#data) for more information.
-
+**Jump to:** [Challenge tracks](#challenge-tracks) · [Paper](#paper) ([Data](#datsets) · [Reproducing](#reproducing-the-paper)) · [Editions & branches](#editions) · [Citation](#citation)
  
 
 
@@ -25,8 +21,7 @@ The challenge ran two tracks (full details on the edition branches):
 [**Towards Useful and Private Synthetic Omics: Community Benchmarking of Generative Models for Transcriptomics Data**](https://www.biorxiv.org/content/10.64898/2026.03.02.707794v1.abstract) (biorXiv, 2026)
  
 The paper focuses on **Track I, Blue Team methods**  — the privacy-preserving generative
-models — evaluated against membership-inference attacks provided in this repo. Track II and the Red-team tasks are documented on the challenge
-edition branches but are outside this paper's scope.
+models — evaluated against membership-inference attacks provided in this repo. Track II and the Red-team tasks are documented on the challenge edition branches but are outside this paper's scope.
 
 The **2025 Blue Team submissions** are the generative methods under analysis in addition to the baseline methods provided in the repo.
 
@@ -40,18 +35,6 @@ The **2025 Blue Team submissions** are the generative methods under analysis in 
 Follow their instructions for model training and generation. 
 
 The paper also introduces additional metrics beyond the challenge scoring. Reproduce the baseline generative methods and evaluation with [v1.0-paper]() (Track I, Blue team). 
-
-```bibtex
-@article {{\"O}zt{\"u}rk2026,
-	author = {{\"O}zt{\"u}rk, Hakime and Afonja, Tejumade and J{\"a}lk{\"o}, Joonas and Binkyte, Ruta and Rodriguez-Mier, Pablo and Lobentanzer, Sebastian and Wicks, Andrew and Kreuer, Jules and Ouaari, Sofiane and Pfeifer, Nico and Menzies, Shane and Pentyala, Sikha and Filienko, Daniil and Golob, Steven and McKeever, Patrick and Banerjee, Jineta and Foschini, Luca and De Cock, Martine and Saez-Rodriguez, Julio and Fritz, Mario and Stegle, Oliver and Honkela, Antti},
-	title = {Towards Useful and Private Synthetic Omics: Community Benchmarking of Generative Models for Transcriptomics Data},
-	year = {2026},
-	doi = {10.64898/2026.03.02.707794},
-	journal = {bioRxiv}
-}
-
-```
-
 
 
 ## Datasets
@@ -94,6 +77,13 @@ bash submit_jobs/submit_generators.sh submit_jobs/config-brca.yaml
 # 3. Eval in progress.. 
 ```
  
+ > [!NOTE]
+> - **TCGA-COMBINED, MIA step:** pass `--reference_file <..._reference.tsv>` to the MIA
+>   call (see the comment in `submit/run_mia.sh`). BRCA does not use it.
+> - **R stages (DE, coexpression, pathway)** run under **R 4.3.2**. Install the CRAN /
+>   Bioconductor packages with `Rscript env_R.R`. Coexpression
+>   requires [hcocena](https://github.com/MarieOestreich/hCoCena) — install it by
+>   following that repository's own instructions.
 
  
 ## Editions
@@ -107,10 +97,26 @@ This code-base evolved with the challenges and its accompaniying paper. Each edi
 | Paper | [`v1.0-paper`]() | `main` |
  
 
+ ## Citation
+ 
+If you use this benchmark, please cite:
+ 
+```bibtex
+@article {{\"O}zt{\"u}rk2026,
+	author = {{\"O}zt{\"u}rk, Hakime and Afonja, Tejumade and J{\"a}lk{\"o}, Joonas and Binkyte, Ruta and Rodriguez-Mier, Pablo and Lobentanzer, Sebastian and Wicks, Andrew and Kreuer, Jules and Ouaari, Sofiane and Pfeifer, Nico and Menzies, Shane and Pentyala, Sikha and Filienko, Daniil and Golob, Steven and McKeever, Patrick and Banerjee, Jineta and Foschini, Luca and De Cock, Martine and Saez-Rodriguez, Julio and Fritz, Mario and Stegle, Oliver and Honkela, Antti},
+	title = {Towards Useful and Private Synthetic Omics: Community Benchmarking of Generative Models for Transcriptomics Data},
+	year = {2026},
+	doi = {10.64898/2026.03.02.707794},
+	journal = {bioRxiv}
+}
+
+```
+
+
 ## License
 Code is licensed under **BSD-3-Clause** (see [`LICENSE`](LICENSE)). Data terms are
 stated on the Zenodo deposit (derived from public TCGA gene expression; see
-[Data](#data)).
+[Data](#datasets)).
  
 
 

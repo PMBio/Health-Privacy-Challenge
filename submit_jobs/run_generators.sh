@@ -11,17 +11,13 @@
 
 set -euo pipefail
 source activate_env.sh  
+source lib.sh
 
 # --- args first ---
 GENERATOR="${1:?usage: sbatch run_generators.sh <generator> <experiment>}"
 EXPERIMENT="${2:?missing experiment}"
 CONFIG="${3:?missing config}"
-cfg() { python -c "import yaml,sys; d=yaml.safe_load(open('$CONFIG')); print(eval('d'+''.join(f'[\"{k}\"]' for k in sys.argv[1:])))" "$@"; }
-
-HOME_DIR=$(cfg dir_list home)
-DATASET=$(cfg dataset_config name)
-DATA_SPLIT_DIR="${HOME_DIR}/$(cfg dir_list data_save_dir)"
-SRC_DIR="${HOME_DIR}/src"
+resolve_paths
 
 SPLIT=$SLURM_ARRAY_TASK_ID
 
