@@ -74,12 +74,16 @@ python src/prepare/split_data.py --config submit_jobs/config-combined.yaml
 # 2. generate synthetic data (SLURM job arrays, per dataset)
 bash submit_jobs/submit_generators.sh submit_jobs/config-brca.yaml
  
-# 3. Eval in progress.. 
+# 3. evaluate synthetic (SLURM job arrays, per dataset) — run after generation completes
+bash submit_jobs/submit_eval.sh submit_jobs/config-brca.yaml   # fidelity + utility 
+bash submit_jobs/submit_mia.sh  submit_jobs/config-brca.yaml    # MIA
+## will be updated for R files.. 
+
 ```
  
  > [!NOTE]
 > - **TCGA-COMBINED, MIA step:** pass `--reference_file <..._reference.tsv>` to the MIA
->   call (see the comment in `submit/run_mia.sh`). BRCA does not use it.
+>   call (see the comment in `submit_jobs/run_mia.sh`). BRCA does not use it.
 > - **R stages (DE, coexpression, pathway)** run under **R 4.3.2**. Install the CRAN /
 >   Bioconductor packages with `Rscript env_R.R`. Coexpression
 >   requires [hcocena](https://github.com/MarieOestreich/hCoCena) — install it by
