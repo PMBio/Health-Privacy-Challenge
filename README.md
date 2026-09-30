@@ -6,7 +6,7 @@ This repository holds the code and documentation for the [Health Privacy Challen
 
 <!-- When a new edition opens, replace the line above with, e.g.:
      **Active edition:** running in 2027 → see the [`2027`](link) branch. -->
-**Jump to:** [Challenge tracks](#challenge-tracks) · [Paper](#paper) ([Data](#datsets) · [Reproducing](#reproducing-the-paper)) · [Editions & branches](#editions) · [Citation](#citation)
+**Jump to:** [Challenge tracks](#challenge-tracks) · [Paper](#paper) ([Data](#datasets) · [Reproducing](#reproducing-the-paper)) · [Editions & branches](#editions) · [Citation](#citation)
  
 
 
@@ -77,7 +77,7 @@ bash submit_jobs/submit_generators.sh submit_jobs/config-brca.yaml
 # 3. evaluate synthetic (SLURM job arrays, per dataset) — run after generation completes
 bash submit_jobs/submit_eval.sh submit_jobs/config-brca.yaml   # fidelity + utility 
 bash submit_jobs/submit_mia.sh  submit_jobs/config-brca.yaml    # MIA
-## will be updated for R files.. 
+bash submit_jobs/submit_bio.sh  submit_jobs/config-brca.yaml    # DE, co-expr, pathway
 
 ```
  
@@ -87,7 +87,7 @@ bash submit_jobs/submit_mia.sh  submit_jobs/config-brca.yaml    # MIA
 > - **R stages (DE, coexpression, pathway)** run under **R 4.3.2**. Install the CRAN /
 >   Bioconductor packages with `Rscript env_R.R`. Coexpression
 >   requires [hcocena](https://github.com/MarieOestreich/hCoCena) — install it by
->   following that repository's own instructions.
+>   following repository's own instructions.
 
  
 ## Editions

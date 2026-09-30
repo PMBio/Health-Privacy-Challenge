@@ -359,7 +359,7 @@ def run_evaluator(split_no: int, generator_name: str, experiment_name: str, conf
 def combine_results(generator_name: str, experiment_name: str, configfile: str):
     with open(configfile, 'r') as file:
         config = yaml.safe_load(file)
-        
+
     evaluator = ModelEvaluator(config=config, 
                                split_no=0, 
                                generator_name=generator_name, 
@@ -378,8 +378,9 @@ def combine_results(generator_name: str, experiment_name: str, configfile: str):
 @click.argument('cutoff', type=float, default=0.0)
 @click.argument('generator_name', type=str, default=None)
 @click.argument('experiment_name', type=str, default=None)
-def combine_coexpress_results(cutoff, generator_name, experiment_name):
-    with open("config.yaml", 'r') as file:
+@click.option('--configfile', type=str, default="config.yaml")
+def combine_coexpress_results(cutoff, generator_name, experiment_name, configfile):
+    with open(configfile, 'r') as file:
         config = yaml.safe_load(file)
     evaluator = ModelEvaluator(config=config, 
                                split_no=0, 
@@ -418,8 +419,9 @@ def combine_coexpress_results(cutoff, generator_name, experiment_name):
 @click.argument('lfc_threshold', type=float, default=0)
 @click.argument('generator_name', type=str, default=None)
 @click.argument('experiment_name', type=str, default=None)
-def combine_diffexpress_results(lfc_threshold, generator_name, experiment_name):
-    with open("config.yaml", 'r') as file:
+@click.option('--configfile', type=str, default="config.yaml")
+def combine_diffexpress_results(lfc_threshold, generator_name, experiment_name, configfile):
+    with open(configfile, 'r') as file:
         config = yaml.safe_load(file)
     evaluator = ModelEvaluator(config=config, 
                                split_no=0, 
@@ -458,8 +460,9 @@ def combine_diffexpress_results(lfc_threshold, generator_name, experiment_name):
 @click.command()
 @click.argument('generator_name', type=str, default=None)
 @click.argument('experiment_name', type=str, default=None)
-def combine_pathway_results(generator_name, experiment_name):
-    with open("config.yaml", 'r') as f:
+@click.option('--configfile', type=str, default="config.yaml")
+def combine_pathway_results(generator_name, experiment_name, configfile):
+    with open(configfile, 'r') as f:
         config = yaml.safe_load(f)
 
     evaluator = ModelEvaluator(
@@ -503,60 +506,6 @@ def combine_pathway_results(generator_name, experiment_name):
 
 
 
-@click.command()
-@click.argument('lfc_threshold', type=float, default=0.0)
-@click.argument('generator_name', type=str, default=None)
-@click.argument('experiment_name', type=str, default=None)
-def combine_enrichment_results(lfc_threshold, generator_name, experiment_name):
-    with open("config.yaml", 'r') as file:
-        config = yaml.safe_load(file)
-    evaluator = ModelEvaluator(config=config, 
-                               split_no=0, 
-                               generator_name=generator_name, 
-                               experiment_name=experiment_name)
-
-    # Define the patterns to combine
-    file_patterns = {
-       # "enrichment": f"DE_enrichment_lfc={lfc_threshold:g}_split_*.csv",
-        "gene_counts": f"DE_gene_counts_lfc={lfc_threshold:.1f}_split_*.csv"
-    }
-
-    for key, pattern in file_patterns.items():
-        results_files = [
-            os.path.join(evaluator.bio_files_dir, f)
-            for f in os.listdir(evaluator.bio_files_dir)
-            if fnmatch.fnmatch(f, pattern)
-        ]
-
-        print(f"Combining {key} files: {results_files}")
-
-        if not results_files:
-            logging.warning(f"No files found for pattern {pattern}, skipping.")
-            continue
-
-        combined_df = pd.concat(
-            [
-                pd.read_csv(f).assign(
-                    fold=int(re.search(r"_split_(\d+)", f).group(1))
-                )
-                for f in results_files
-            ],
-            ignore_index=True
-        )
-
-        out_file = os.path.join(
-            evaluator.bio_files_dir,
-            f"DE_{key}_lfc={lfc_threshold}_results.csv"
-        )
-        combined_df.to_csv(out_file, index=False)
-        print(f"Wrote combined {key} results to {out_file}")
-
-        # Optional: cleanup split files
-        for f in results_files:
-            if os.path.exists(f):
-                os.remove(f)
-        logging.info(f"Cleanup of {key} split files completed.")
-
 ### function runs for an individual split
 ### results are saved under
 ### results/figures/{dataset_name}/{model_name}/{experiment_name}
@@ -589,7 +538,6 @@ cli.add_command(combine_results)
 cli.add_command(plot_pca)
 cli.add_command(combine_coexpress_results)
 cli.add_command(combine_diffexpress_results)
-cli.add_command(combine_enrichment_results)
 cli.add_command(combine_pathway_results)
 
 if __name__ == '__main__':
