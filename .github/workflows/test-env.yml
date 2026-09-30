@@ -1,0 +1,28 @@
+# .github/workflows/test-env.yml
+name: health-priv-env
+
+on:
+  push:
+    branches: [main]        # or [main, 2026] etc.
+  pull_request:
+  schedule:
+    - cron: "0 6 1 * *"
+  workflow_dispatch:
+
+jobs:
+  build-env:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up micromamba + solve environment
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yml
+          cache-environment: true
+
+      - name: Import smoke test
+        shell: bash -el {0}          # -l so the env is activated
+        run: |
+          python -c "import numpy, pandas, sklearn, scipy, requests, yaml, click, torch; print('core imports OK')"
+          python -c "import ctgan, domias, opacus, statsmodels; print('pip deps OK')"
