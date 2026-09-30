@@ -28,8 +28,7 @@ The paper focuses on **Track I, Blue Team methods**  — the privacy-preserving 
 models — evaluated against membership-inference attacks provided in this repo. Track II and the Red-team tasks are documented on the challenge
 edition branches but are outside this paper's scope.
 
-The **2025 Blue Team submissions** are the generative methods under analysis in addition to the baseline methods provided in the repo. 2026 Blue Team submissions are not included, as that edition was still running at the time of preparing the paper. The paper also introduces additional metrics beyond the challenge scoring.
-
+The **2025 Blue Team submissions** are the generative methods under analysis in addition to the baseline methods provided in the repo.
 
 **Participant methods included** (code archived by the authors; cite their DOIs):
 | Method | Authors | DOI |
@@ -40,7 +39,7 @@ The **2025 Blue Team submissions** are the generative methods under analysis in 
 
 Follow their instructions for model training and generation. 
 
-Reproduce the baseline generative methods and evaluation with [v1.0-paper]({{ link }}) (Track I, blue team):
+The paper also introduces additional metrics beyond the challenge scoring. Reproduce the baseline generative methods and evaluation with [v1.0-paper]() (Track I, Blue team). 
 
 ```bibtex
 @article {{\"O}zt{\"u}rk2026,
@@ -63,30 +62,27 @@ Access Policy](https://gdc.cancer.gov/access-data/data-access-policies) and TCGA
 - **Preprocessed data:** Zenodo [10.5281/zenodo.22996320](https://doi.org/10.5281/zenodo.22996320).
 - Datasets are also available for download in [ELSA Benchmarks  Platform](https://benchmarks.elsa-ai.eu/?ch=8&com=introduction) after registration.
 
+
 ### Reproducing the paper
  
-
 **Figures only.** The paper's results are frozen in
 `paper/results/` and the `paper_figures.ipynb` regenerates tables and figures from them:
  
 ```bash
-#   open paper/figures.ipynb and run all cells
+#   open paper/paper_figures.ipynb and run all cells
 ```
 
  
 **Regenerate from the scratch (cluster version).** Prepare the data, run the generative
-methods and scoring, then compile the results the notebook consumes. This assumes 
-the code runs on SLURM cluster with a GPU (for training). 
-Each dataset has
-its own config (`config_brca.yaml`, `config_combined.yaml`); run the steps once per
+methods and evaluation (including baseline MIA), then compile the results in the notebook. This assumes 
+the code runs on SLURM cluster (Use GPU for training if available). 
+Each dataset has its own config (`config_brca.yaml`, `config_combined.yaml`); run the steps once per
 dataset by pointing at the relevant config.
 
 
-
- 
 ```bash
 # 1. data prep (per dataset)
-python src/prepare/fetch_data.py                                   # pull + verify + extract from Zenodo
+python src/prepare/fetch_data.py                            # pull + verify + extract from Zenodo
 python src/prepare/split_data.py --config submit_jobs/config_brca.yaml       # folds + MIA membership labels
 python src/prepare/split_data.py --config submit_jobs/config_combined.yaml
  
@@ -95,7 +91,7 @@ python src/prepare/split_data.py --config submit_jobs/config_combined.yaml
 bash submit_jobs/submit_generators.sh submit_jobs/config_brca.yaml
 bash submit_jobs_submit_generators.sh submit_jobs/config_combined.yaml
  
-
+# 3. Eval in progress.. 
 ```
  
 
