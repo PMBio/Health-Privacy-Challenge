@@ -416,48 +416,6 @@ def combine_coexpress_results(cutoff, generator_name, experiment_name, configfil
 
 
 @click.command()
-@click.argument('lfc_threshold', type=float, default=0)
-@click.argument('generator_name', type=str, default=None)
-@click.argument('experiment_name', type=str, default=None)
-@click.option('--configfile', type=str, default="config.yaml")
-def combine_diffexpress_results(lfc_threshold, generator_name, experiment_name, configfile):
-    with open(configfile, 'r') as file:
-        config = yaml.safe_load(file)
-    evaluator = ModelEvaluator(config=config, 
-                               split_no=0, 
-                               generator_name=generator_name, 
-                               experiment_name=experiment_name)
-    for kyw in ['tpr', 'fpr']:
-        results_files = [
-            os.path.join(evaluator.bio_files_dir, f)
-            for f in os.listdir(evaluator.bio_files_dir)
-            if fnmatch.fnmatch(f, f"DE_*{lfc_threshold:.1f}_split*_{kyw}.csv")
-        ]
-
-        print(results_files)
-
-        combined_df = pd.concat(
-            [
-                pd.read_csv(f).assign(
-                    fold=int(re.search(r"_split_(\d+)", f).group(1))
-                )
-                for f in results_files
-            ],
-            ignore_index=True
-        )
-
-        combined_df.to_csv(
-            os.path.join(evaluator.bio_files_dir, f"DE_lfc={lfc_threshold}_results_{kyw}.csv"),
-            index=False
-        )
-
-        for f in results_files:
-            if os.path.exists(f):
-                os.remove(f)
-        logging.info("Cleanup completed.")
-
-
-@click.command()
 @click.argument('generator_name', type=str, default=None)
 @click.argument('experiment_name', type=str, default=None)
 @click.option('--configfile', type=str, default="config.yaml")
@@ -504,6 +462,62 @@ def combine_pathway_results(generator_name, experiment_name, configfile):
     logging.info("Cleanup completed.")
 
 
+@click.command()
+@click.argument('lfc_threshold', type=float, default=0)
+@click.argument('generator_name', type=str, default=None)
+@click.argument('experiment_name', type=str, default=None)
+@click.option('--configfile', type=str, default="config.yaml")
+def combine_diffexpress_results(lfc_threshold, generator_name, experiment_name, configfile):
+    with open(configfile) as file:
+        config = yaml.safe_load(file)
+    evaluator = ModelEvaluator(config=config, split_no=0,
+                               generator_name=generator_name,
+                               experiment_name=experiment_name)
+
+    # R drops trailing zeros in filenames: 0.0 -> "0", 1.0 -> "1", 0.2 -> "0.2".
+    if lfc_threshold == int(lfc_threshold):
+        lfc_tag = str(int(lfc_threshold))
+    else:
+        lfc_tag = str(lfc_threshold)
+
+    for kyw in ['tpr', 'fpr']:
+        results_files = [
+            os.path.join(evaluator.bio_files_dir, f)
+            for f in os.listdir(evaluator.bio_files_dir)
+            if fnmatch.fnmatch(f, f"DE_lfc={lfc_tag}_split_*_{kyw}.csv")
+        ]
+        if not results_files:
+            raise SystemExit(
+                f"No DE split files for lfc={lfc_threshold} (tag '{lfc_tag}', {kyw}) "
+                f"in {evaluator.bio_files_dir}"
+            )
+
+        expected_rows = sum(len(pd.read_csv(f)) for f in results_files)
+
+        combined_df = pd.concat(
+            [pd.read_csv(f).assign(fold=int(re.search(r"_split_(\d+)", f).group(1)))
+             for f in results_files],
+            ignore_index=True
+        )
+        out_path = os.path.join(evaluator.bio_files_dir, f"DE_lfc={lfc_tag}_results_{kyw}.csv")
+        combined_df.to_csv(out_path, index=False)
+        print(f"lfc={lfc_tag} {kyw}: combined {len(results_files)} files -> {len(combined_df)} rows")
+
+        # verify the write before deleting inputs
+        ok = (
+            os.path.exists(out_path)
+            and os.path.getsize(out_path) > 0
+            and len(pd.read_csv(out_path)) == expected_rows
+        )
+        if ok:
+            for f in results_files:
+                if os.path.exists(f):
+                    os.remove(f)
+            print(f"  verified ({expected_rows} rows) — removed {len(results_files)} split files")
+        else:
+            raise SystemExit(
+                f"Verification failed for {out_path} "
+                f"(expected {expected_rows} rows); split files kept.")
 
 
 ### function runs for an individual split
