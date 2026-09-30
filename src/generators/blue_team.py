@@ -88,15 +88,21 @@ def generate_data_splits():
 ## change the corresponding keys in the config.yaml
 @click.command()
 @click.argument('split_no', type=int)
-@click.option('--experiment_name', type=str, default="")
-def run_generator(split_no: int, experiment_name: str = None): #come back to this later 
+@click.option('--configfile', type=str, default="config.yaml")
+@click.option('--generator_name', type=str, default=None)
+@click.option('--experiment_name', type=str, default=None)
+def run_generator(split_no: int, configfile:str, generator_name:str=None, experiment_name: str = None):
     # Load the config file
-    configfile = "config.yaml"
+    #configfile = "config.yaml"
     config = yaml.safe_load(open(configfile))
 
-    generator_name = config.get('generator_name')
+    #override config with command line arguments
+    if generator_name is not None:  
+        config['generator_name'] = generator_name
+    else:
+        generator_name = config.get('generator_name')
     GeneratorClass = get_generator_class(generator_name)
-
+    
     if not GeneratorClass:
         raise ValueError(f"Unknown generator name: {generator_name}")
 

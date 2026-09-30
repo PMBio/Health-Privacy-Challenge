@@ -321,6 +321,12 @@ def downstream_confidence_attack(X_candidates, X_synth, y_synth,
     return scores
 
 
+def seeded_logan(X_test, X_G, X_ref, seed=42):
+    np.random.seed(seed)       # -> np.random.choice batch sampling
+    torch.manual_seed(seed)    # -> Net weight init
+    return LOGAN_D1(X_test, X_G, X_ref)
+
+
 def run_baselines(
     X_test: np.ndarray,
     #Y_test: np.ndarray,
@@ -340,7 +346,7 @@ def run_baselines(
     score["loss_rf"] = downstream_confidence_attack(X_test, X_G, y_G, model_type='rf') #conf_rf
   
     if X_ref is not None:
-        score["LOGAN_D1"] = LOGAN_D1(X_test, X_G, X_ref)
+        score["LOGAN_D1"] = seeded_logan(X_test, X_G, X_ref)
         score["gan_leaks_cal"] = GAN_leaks_cal(X_test, X_G, X_ref_GLC) #log of likelihood ratio to avoid underflow
     
         ### apply PCA 
@@ -362,10 +368,10 @@ def run_baselines(
         score["gan_leaks_cal_sDE"] = GAN_leaks_cal(sDE_test, sDE_synth, sDE_ref)
         score["gan_leaks_cal_dDE"] = GAN_leaks_cal(dDE_test, dDE_synth, dDE_ref)
 
-        score["LOGAN_D1_pca"] = LOGAN_D1(pca_test, pca_synth, pca_ref)
-        score["LOGAN_D1_vDE"] = LOGAN_D1(vDE_test, vDE_synth, vDE_ref)
-        score["LOGAN_D1_sDE"] = LOGAN_D1(sDE_test, sDE_synth, sDE_ref)
-        score["LOGAN_D1_dDE"] = LOGAN_D1(dDE_test, dDE_synth, dDE_ref)
+        score["LOGAN_D1_pca"] = seeded_logan(pca_test, pca_synth, pca_ref)
+        score["LOGAN_D1_vDE"] = seeded_logan(vDE_test, vDE_synth, vDE_ref)
+        score["LOGAN_D1_sDE"] = seeded_logan(sDE_test, sDE_synth, sDE_ref)
+        score["LOGAN_D1_dDE"] = seeded_logan(dDE_test, dDE_synth, dDE_ref)
 
 
 
@@ -390,7 +396,7 @@ def get_HVG_genes(X_ref, X_test, X_G, top_k=500):
     # Compute variance ratio (or difference) for each gene
     var_ratio = var_synth / (var_ref + 1e-10)  
 
-    top_genes_idx = np.argsort(var_ratio)[-top_k:]
+    top_genes_idx = np.argsort(var_ratio, kind="stable")[-top_k:]
 
     de_G = X_G[:, top_genes_idx]
     de_ref = X_ref[:, top_genes_idx]
@@ -400,7 +406,7 @@ def get_HVG_genes(X_ref, X_test, X_G, top_k=500):
 
 def get_supervised_DE_genes( X_ref, X_test, X_G, y_G, top_k=500):
     mi = mutual_info_classif(X_G, y_G, random_state=42)
-    top_k_idx = np.argsort(mi)[-top_k:] 
+    top_k_idx = np.argsort(mi, kind="stable")[-top_k:] 
 
     de_G = X_G[:, top_k_idx]
     de_ref = X_ref[:, top_k_idx]
@@ -413,7 +419,7 @@ def get_discriminative_genes( X_ref, X_test, X_G, top_k=500):
     y_combined = np.array([1]*len(X_G) + [0]*len(X_ref))
     lr = LogisticRegression(C=0.1, penalty='l1', solver='liblinear', random_state=42)
     lr.fit(X_combined, y_combined)
-    top_k_idx = np.argsort(np.abs(lr.coef_[0]))[-top_k:]
+    top_k_idx = np.argsort(np.abs(lr.coef_[0]), kind="stable")[-top_k:]
 
     de_G = X_G[:, top_k_idx]
     de_ref = X_ref[:, top_k_idx]

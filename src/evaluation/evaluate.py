@@ -26,7 +26,8 @@ from evaluation.utils.prdc import PRDensityCoverage
 
 def check_dirs(path):
     if not os.path.exists(path):
-        os.makedirs(path)
+        os.makedirs(path, exist_ok=True)
+
 
 class BaseEvaluator:
     def __init__(self, 

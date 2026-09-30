@@ -1,0 +1,201 @@
+dir_list:
+  home: "~/Health-Privacy-Challenge"
+  data_splits: "data_splits"
+  meta: "data/meta"
+  processed_data: "data/processed"
+  #data_save_dir: "data_splits"
+  #split_save_dir: "data_splits/split_indices"
+  figures: "results/figures"
+  res_files: "results/files"
+  bio_files: "results/bio"
+  mia_files: "results/mia"
+  hcocena_dir: "~/software/R/hCoCena/"
+
+dataset_config:
+  name: "TCGA-BRCA" 
+  count_file: "data/processed/TCGA-BRCA_primary_tumor_star_deseq_VST_lmgenes.tsv" 
+  annot_file: "data/meta/TCGA-BRCA_primary_tumor_subtypes.csv" 
+  sample_col_name: "samplesID" 
+  subtype_col_name: "Subtype" 
+  num_splits: 5
+  random_seed: 42
+  membership_label_col: "membership_label"
+
+
+
+generator_name: "multivariate"
+generate: True
+train: True
+load_from_checkpoint: False
+
+
+multivariate_config:
+  noise_level: 0.5
+  random_seed: 42 # TODO: seed experiment for reproducibility
+
+
+cvae_config: 
+  device_type: "cuda"
+  random_seed: 42 # seed experiment for reproducibility
+  preprocess: "standard"
+
+  train_config:
+    num_iters: 10000
+    batch_size: 64
+  
+  model_config:
+    z_dim: 128
+    beta: 0.001 ## to tune 
+    lr: 0.001
+    transform: "none"
+    condition_type: "embedding" #embedding
+
+  generation_config:
+    n_synth_samples: -1
+    uniform_y: False
+
+  disease_embed_dim: 20
+
+
+
+dpcvae_config: 
+  device_type: "cuda"
+  random_seed: 42
+  preprocess: "standard"
+
+  train_config:
+    num_iters: 10000
+    batch_size: 64
+  
+  model_config:
+    z_dim: 64
+    beta: 0.001
+    lr: 0.001
+    transform: "none"
+  
+  privacy_config:
+    target_epsilon: 10
+    preprocessor_eps: 0.1 # if private preprocessor is turned on, this will be deducted from total target_epsilon and the remainder will be used to train the model.
+    target_delta: 0.00001
+    max_norm: 0.1
+
+  generation_config:
+    n_synth_samples: -1
+    uniform_y: False
+
+
+ctgan_config: 
+  device_type: "cuda"
+  random_seed: 42
+  preprocess: "standard"
+
+  train_config:
+    num_iters: 10000
+    batch_size: 64
+
+  generation_config:
+    n_synth_samples: -1
+
+
+cvae_gmm_config: 
+  device_type: "cuda" 
+  #dir_feature_name: "latent_dim"
+  random_seed: 42
+  preprocess: "standard"
+  
+  train_config:
+     epochs: 100
+     batch_size: 64
+
+  model_config:
+    latent_dim: 128
+    learning_rate: 0.001
+    beta: 0.001 #1.0
+    n_components: 3
+    condition_type: "embedding" #onehot
+
+  disease_embed_dim: 20
+
+
+wgan_gp_config: 
+  device_type: "cuda" 
+  random_seed: 42
+  preprocess: "standard"
+  
+  train_config:
+     epochs: 100
+     batch_size: 64
+
+  model_config:
+    latent_dim: 128
+    lambda_gp: 10
+    n_critic: 5
+    learning_rate: 0.0001
+    condition_type: "embedding" #embedding #onehot
+
+  disease_embed_dim: 20
+
+dpctgan_config:
+  # This configuration uses the SmartNoise implementation. https://github.com/opendp/smartnoise-sdk
+  # Note: It requires a private preprocessor for continuous columns, so allocate privacy budget accordingly.
+  # For example, with the BRCA dataset:
+  #   preprocessing_eps = preprocessor_eps_multiplier * feature_size
+  #   If preprocessor_eps is computed as 31.1, and target_epsilon is 35, this leaves 3.86 for training the GAN model.
+  # To allocate more budget to GAN training, increase `target_epsilon`.
+  # Re-implementation using the latest Opacus version is encouraged as the current one is outdated.
+  # Contributions through PRs are welcome.
+  
+  device_type: "cuda"
+  random_seed: 42
+  preprocess: "minmax" 
+  # SmartNoise uses MinMax Scaler for continuous columns by default, so changing this does not change anything.
+  # Left for consistency with naming convention of the other generators.
+
+  train_config:
+    num_iters: 10000
+    # Set `num_iters` to a high value to allow termination based on privacy budget.
+    # Otherwise, training will stop when `num_iters` is reached.
+    batch_size: 64
+
+  privacy_config:
+    target_epsilon: 35
+    preprocessor_eps_multiplier: 0.1
+    # Preprocessor epsilon is calculated as `preprocessor_eps_multiplier * feature_size`.
+    # Ensure enough budget is allocated for inferring bounds.
+    # To save budget, pass known bounds directly; otherwise, set a positive value less than training epsilon.
+    # Preprocessing budget is subtracted from the training budget.
+    target_delta: 0.00001
+    max_norm: 0.1
+
+  generation_config:
+    n_synth_samples: -1
+    uniform_y: false
+
+
+###### EVALUATION RELATED CONFIG
+
+attack_model: "domias_baselines"
+
+evaluator_config:   
+  random_seed: 42
+  bio_params:
+    p_value: 0.05
+
+
+coexp_cutoffs:
+  - 0.0
+  - 0.1
+  - 0.2
+  - 0.3
+  - 0.4
+  - 0.5
+
+log_fold_changes:
+  - 0.0
+  - 0.2
+  - 0.5
+  - 1.0
+
+
+domias_baselines_config:
+  taxonomy: "bb"

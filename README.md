@@ -1,95 +1,121 @@
-# CAMDA 2026 - ELSA Health Privacy Challenge
-The Health Privacy Challenge is back in 2026, featuring expanded baseline methods and evaluation metrics and an extended submission period across all tasks.
+# CAMDA / ELSA Health Privacy Challenge
 
-This repository is a "starter package" for the [Health Privacy Competition](https://benchmarks.elsa-ai.eu/?ch=8) that runs within [CAMDA Conference 2026](). The  Health Privacy Challenge is organized in the context of the European Lighthouse on Safe and Secure AI (ELSA, https://elsa-ai.eu). 
+This repository holds the code and documentation for the [Health Privacy Challenge](https://benchmarks.elsa-ai.eu/?ch=8), run within [CAMDA/ISMB Conference](https://bipress.boku.ac.at/camda2026/) in 2025 and 2026, and its accompanying paper. The  Health Privacy Challenge is organized in the context of the European Lighthouse on Safe and Secure AI (ELSA, https://elsa-ai.eu). 
 
-The Health Privacy Challenge consists of two tracks: 
+**Active edition:** None. The 2026 challenge is concluded in July, 2026. 
 
-### [Track I: Featuring Bulk RNA-seq](/experiments/track_i/) 
-Track I runs in a “Blue Team (🫐)  vs Red Team (🍅)” scheme. 
--  The **blue teams** develop **novel privacy preserving generative methods** that can mitigate privacy risks while preserving biological insights for bulk gene expression datasets,
-- The **red teams**  act as adversaries by deploying state‑of‑the‑art, realistic membership inference attacks (MIAs) **against a set of the baseline and Blue Teams’ solutions from the CAMDA 2025 Challenge**, in order to  assess the privacy robustness of the proposed generative methods.
+<!-- When a new edition opens, replace the line above with, e.g.:
+     **Active edition:** running in 2027 → see the [`2027`](link) branch. -->
+**Jump to:** [Challenge tracks](#challenge-tracks) · [Paper](#paper) ([Data](#data) · [Reproducing](#reproducing-the-paper)) · [Editions & branches](#editions)
+ 
+> [!NOTE]
+> Code and documentation only. See [Data](#data) for more information.
 
-
-### [Track II: Featuring Single-cell RNA-seq](/experiments/track_ii/) 
-Track II invites participants to explore the privacy and utility of synthetic single-cell gene expression (scRNA-seq) data. Participants are encouraged to:
-- **investigate and reveal potential privacy risks** linked to generating synthetic **scRNA-seq** datasets.
-- develop **privacy-preserving generative methods** that balances data privacy and utility.
-- propose **novel evaluation metrics and strategies** to assess both utility and privacy preservation in a **multi-sample donor** setting.
+ 
 
 
-We are looking forward to engaging with you and working together to deepen our understanding of privacy in healthcare. :hugs: 
+## Challenge tracks 
+The challenge ran two tracks (full details on the edition branches):
+- **[Track I — Bulk RNA-seq]()**. A Blue Team 🫐 vs Red Team 🍅 scheme. Blue teams build privacy-preserving generative methods for bulk gene expression; red teams run membership-inference attacks against the baselines and blue-team solutions to test their privacy robustness.
 
-## Introduction  
-
-**This repository contains:**
-
-- :woman_technologist: **Baseline code** for generative methods (**Blue Teams**) and  Membership Inference Attack algorithms  (**Red teams**).
-- :memo: **Documentation** that details setup and submission instructions for the competition. 
-- :paperclip: **Submission templates** to base your submissions on. 
-
-**Other resources:**
-
-- :speech_balloon: **[CAMDA Health Privacy Challenge Google Groups:](https://groups.google.com/g/camda-health-privacy-challenge)** Join us for questions, discussions and further announcements. 
-- :globe_with_meridians: **[CAMDA Challenge website:](https://bipress.boku.ac.at/camda2025/)** Follow CAMDA 2026 for conference announcements. **Will be updated soon**
-- :globe_with_meridians: **[ELSA Benchmark method submission platform:](https://benchmarks.elsa-ai.eu/?ch=8)** The platform to register, to download datasets, and to submit your benchmark methods. 
-- :books: **Relevant papers:** https://arxiv.org/abs/2402.04912 
-
-## :roller_coaster: Get started!  
-All teams, please check out your home pages to set up and use the starter package!
-
-- [Track I Blue Teams Home Page](/experiments/track_i/blue_team/)
-- [Track I Red Teams Home Page](/experiments/track_i/red_team/)
-- [Track II Single-cell Home Page](/experiments/track_ii/)
+- **[Track II — Single-cell RNA-seq]()**. Privacy and utility of synthetic scRNA-seq data in a multi-sample donor setting: building generative methods, proposing suitable evaluation metrics, and revealing privacy risks. 
 
 
-## Datasets 
+## Paper 
+[**Towards Useful and Private Synthetic Omics: Community Benchmarking of Generative Models for Transcriptomics Data**](https://www.biorxiv.org/content/10.64898/2026.03.02.707794v1.abstract) (biorXiv, 2026)
+ 
+The paper focuses on **Track I, Blue Team methods**  — the privacy-preserving generative
+models — evaluated against membership-inference attacks provided in this repo. Track II and the Red-team tasks are documented on the challenge
+edition branches but are outside this paper's scope.
 
-Datasets are available for download in [ELSA Benchmarks Competition platform](https://benchmarks.elsa-ai.eu/?ch=8&com=introduction) after registration and signing the data download agreement. 
-
-### Track I: Featuring bulk RNA-seq
-We re-distribute pre-processed versions of two open-access TCGA RNA-seq datasets, available through the  [GDC portal](https://gdc.cancer.gov):
-
-- **TCGA-BRCA RNASeq** 
-
-    **Dimensions:** <1089 x 978> <individuals x landmark genes>
-    **Details:** Suitable for cancer subtype prediction (5 subtypes)
-
-- **TCGA COMBINED RNASeq** (with 10 different cancer tissues )
-
-    **Dimensions:** <4323 x 978> <individuals x landmark genes>
-    **Details:** Suitable for cancer tissue of origin prediction (10 tissues)
-
-Navigate [here](/data/) for details about the pre-processing steps. 
-
-### Track II: Featuring single-cell RNA-seq 
-We re-distribute raw counts of **OneK1K single-cell RNA-seq** dataset (https://onek1k.org/), a cohort containing 1.26 million peripheral blood mononuclear cells (PBMCs) of 981 donors, generously provided by [Joseph Powell](https://www.garvan.org.au/people/researchers/joseph-powell) and the authors (Yazar et al., 2022) in Garvan Institute of Medical Research. 
-
-- **Train dataset:** <633711 cells from 490 donors x 25834 genes > 
-- **Test dataset:**  <634022 cells from 491 donors x 25834 genes > 
-
-Navigate [Track II homepage](/experiments/track_ii/) for details about the pre-processing steps. 
+The **2025 Blue Team submissions** are the generative methods under analysis in addition to the baseline methods provided in the repo. 2026 Blue Team submissions are not included, as that edition was still running at the time of preparing the paper. The paper also introduces additional metrics beyond the challenge scoring.
 
 
-##  :date: Schedule 
+**Participant methods included** (code archived by the authors; cite their DOIs):
+| Method | Authors | DOI |
+|--------|---------|-----|
+| Embedded-Diffusion | Kreuer. 2026 | [zenodo.22693680]( https://doi.org/10.5281/zenodo.22693680) |
+| NMF / P-NMF | Wicks. 2026 | [zenodo.22818979](https://doi.org/10.5281/zenodo.22818979 ) |
+| DP-PGM | Pentyala et al. 2026 | [Github](https://github.com/sikhapentyala/Health-Privacy-Challenge/tree/main/submission) |
 
-#### Exact submission dates will be updated soon!
+Follow their instructions for model training and generation. 
 
-![Timeline](timeline-2026.png)
+Reproduce the baseline generative methods and evaluation with [v1.0-paper]({{ link }}) (Track I, blue team):
+
+```bibtex
+@article {{\"O}zt{\"u}rk2026,
+	author = {{\"O}zt{\"u}rk, Hakime and Afonja, Tejumade and J{\"a}lk{\"o}, Joonas and Binkyte, Ruta and Rodriguez-Mier, Pablo and Lobentanzer, Sebastian and Wicks, Andrew and Kreuer, Jules and Ouaari, Sofiane and Pfeifer, Nico and Menzies, Shane and Pentyala, Sikha and Filienko, Daniil and Golob, Steven and McKeever, Patrick and Banerjee, Jineta and Foschini, Luca and De Cock, Martine and Saez-Rodriguez, Julio and Fritz, Mario and Stegle, Oliver and Honkela, Antti},
+	title = {Towards Useful and Private Synthetic Omics: Community Benchmarking of Generative Models for Transcriptomics Data},
+	year = {2026},
+	doi = {10.64898/2026.03.02.707794},
+	journal = {bioRxiv}
+}
+
+```
 
 
-## :busts_in_silhouette: Organization Team  
-This competition is designed as a collaborative effort between [European Molecular Biology Laboratory  (EMBL)](https://www.embl.org), [CISPA Helmholtz Center for Information Security](https://cispa.de/en), and the [University of Helsinki](https://www.helsinki.fi/en) with the support of [Barcelona Computer Vision Center (CVC)](https://www.cvc.uab.es) within the context of ELSA Project.  
 
-- **EMBL:** [Hakime Öztürk](https://github.com/hkmztrk), [Julio Saez-Rodriguez](https://saezlab.org) and [Oliver Stegle](https://steglelab.org)
-- **CISPA:** [Tejumade Afonja](https://github.com/tejuafonja), [Ruta Binkyte](https://github.com/RuSaBin) and [Mario Fritz](https://cispa.de/en/research/groups/fritz)
-- **University of Helsinki:**  [Joonas Jälkö](https://researchportal.helsinki.fi/en/persons/joonas-jälkö/) and [Antti Honkela](https://www.cs.helsinki.fi/u/ahonkela/)
+## Data
+ 
+ We re-distribute pre-processed versions of two open-access TCGA RNA-seq datasets, available through the  [GDC portal](https://gdc.cancer.gov); use follows the [NIH Data
+Access Policy](https://gdc.cancer.gov/access-data/data-access-policies) and TCGA citation guidelines.
 
-and in collaboration with **Saez-Rodriguez** group in Track II and the review process:
-- **University of Heidelberg:** [Sebastian Lobentanzer](https://github.com/slobentanzer), and [Pablo R. Mier](https://github.com/pablormier).
+- **Preprocessed data:** Zenodo [10.5281/zenodo.22996320](https://doi.org/10.5281/zenodo.22996320) — open access.
+- Datasets are also available for download in [ELSA Benchmarks  Platform](https://benchmarks.elsa-ai.eu/?ch=8&com=introduction) after registration.
+
+## Reproducing the paper
+ 
+
+**Figures only.** The paper's results are frozen in
+`paper/results/` and the `paper_figures.ipynb` regenerates tables and figures from them:
+ 
+```bash
+#   open paper/figures.ipynb and run all cells
+```
+
+ 
+**Regenerate from the scratch (cluster version).** Prepare the data, run the generative
+methods and scoring, then compile the results the notebook consumes. This assumes 
+the code runs on SLURM cluster with a GPU (for training). 
+Each dataset has
+its own config (`config_brca.yaml`, `config_combined.yaml`); run the steps once per
+dataset by pointing at the relevant config.
 
 
-We also thank [Katharina Mikulik (DKFZ)](https://steglelab.org/katharina-mikulik/),  [Kevin Domanegg (DKFZ)](https://steglelab.org/kevin-domanegg/), and [Danai Vaigaki (EMBL)](https://steglelab.org/danai-vagiaki/) for helpful feedback. 
+
+ 
+```bash
+# 1. data prep (per dataset)
+python src/prepare/fetch_data.py                                   # pull + verify + extract from Zenodo
+python src/prepare/split_data.py --config workflows/config_brca.yaml       # folds + MIA membership labels
+python src/prepare/split_data.py --config workflows/config_combined.yaml
+ 
+
+# 2. generate synthetic data (SLURM job arrays, per dataset)
+bash submit/submit_generators.sh workflows/config_brca.yaml
+bash submit/submit_generators.sh workflows/config_combined.yaml
+ 
+
+```
+ 
+
+ 
+## Editions
+
+This code-base evolved with the challenges and its accompaniying paper. Each edition is frozen as a release and  mirrored as a branch for browsing.
+ 
+| Edition | Release (frozen) | Branch |
+|--------|------------------|--------|
+| 2025 | [`challenge-2025`](https://github.com/PMBio/Health-Privacy-Challenge/releases/tag/v2025) | [`camda-2025`](https://github.com/PMBio/Health-Privacy-Challenge/tree/camda-2025) |
+| 2026 | [`challenge-2026`](https://github.com/PMBio/Health-Privacy-Challenge/releases/tag/v2026) | [`camda-2026`](https://github.com/PMBio/Health-Privacy-Challenge/tree/camda-2026) |
+| Paper | [`v1.0-paper`]() | `main` |
+ 
+
+## License
+ 
+
+
+
 
 <!-- 
 ## :pushpin: Statement

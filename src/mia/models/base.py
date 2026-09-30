@@ -11,9 +11,9 @@ from sklearn.metrics import (accuracy_score, roc_curve, f1_score,
 
 
 
-def check_folder(folder_path):
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
+def check_dirs(path):
+    if not os.path.exists(path):
+        os.makedirs(path, exist_ok=True)
 
 
 class BaseMIAModel(ABC):
