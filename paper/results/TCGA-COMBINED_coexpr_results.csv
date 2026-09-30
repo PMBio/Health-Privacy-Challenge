@@ -1,0 +1,301 @@
+rec,sd,dir,set,fold,origin,corr_threshold,real_correct_edges
+198552,,correct,synthetic,5,MVN,0.0,211318
+9863,,false,synthetic,5,MVN,0.0,211318
+197677,,correct,synthetic,4,MVN,0.0,210784
+10045,,false,synthetic,4,MVN,0.0,210784
+198207,,correct,synthetic,2,MVN,0.0,211426
+9520,,false,synthetic,2,MVN,0.0,211426
+197866,,correct,synthetic,1,MVN,0.0,211571
+10089,,false,synthetic,1,MVN,0.0,211571
+198309,,correct,synthetic,3,MVN,0.0,211131
+9729,,false,synthetic,3,MVN,0.0,211131
+191325,,correct,synthetic,1,CVAE,0.0,211571
+28832,,false,synthetic,1,CVAE,0.0,211571
+191456,,correct,synthetic,2,CVAE,0.0,211426
+29153,,false,synthetic,2,CVAE,0.0,211426
+190054,,correct,synthetic,3,CVAE,0.0,211131
+29847,,false,synthetic,3,CVAE,0.0,211131
+191505,,correct,synthetic,4,CVAE,0.0,210784
+26801,,false,synthetic,4,CVAE,0.0,210784
+192922,,correct,synthetic,5,CVAE,0.0,211318
+27836,,false,synthetic,5,CVAE,0.0,211318
+87775,,correct,synthetic,3,DP-CVAE ε=4,0.0,211131
+84732,,false,synthetic,3,DP-CVAE ε=4,0.0,211131
+83828,,correct,synthetic,4,DP-CVAE ε=4,0.0,210784
+83287,,false,synthetic,4,DP-CVAE ε=4,0.0,210784
+87322,,correct,synthetic,5,DP-CVAE ε=4,0.0,211318
+84633,,false,synthetic,5,DP-CVAE ε=4,0.0,211318
+83225,,correct,synthetic,1,DP-CVAE ε=4,0.0,211571
+82570,,false,synthetic,1,DP-CVAE ε=4,0.0,211571
+87385,,correct,synthetic,2,DP-CVAE ε=4,0.0,211426
+84507,,false,synthetic,2,DP-CVAE ε=4,0.0,211426
+155824,,correct,synthetic,1,CTGAN,0.0,211571
+72597,,false,synthetic,1,CTGAN,0.0,211571
+149226,,correct,synthetic,5,CTGAN,0.0,211318
+79754,,false,synthetic,5,CTGAN,0.0,211318
+150835,,correct,synthetic,2,CTGAN,0.0,211426
+77738,,false,synthetic,2,CTGAN,0.0,211426
+149213,,correct,synthetic,3,CTGAN,0.0,211131
+80451,,false,synthetic,3,CTGAN,0.0,211131
+153123,,correct,synthetic,4,CTGAN,0.0,210784
+75066,,false,synthetic,4,CTGAN,0.0,210784
+114714,,correct,synthetic,1,DP-CTGAN ε=50,0.0,211571
+142405,,false,synthetic,1,DP-CTGAN ε=50,0.0,211571
+109461,,correct,synthetic,2,DP-CTGAN ε=50,0.0,211426
+137073,,false,synthetic,2,DP-CTGAN ε=50,0.0,211426
+110702,,correct,synthetic,3,DP-CTGAN ε=50,0.0,211131
+138981,,false,synthetic,3,DP-CTGAN ε=50,0.0,211131
+110614,,correct,synthetic,4,DP-CTGAN ε=50,0.0,210784
+138678,,false,synthetic,4,DP-CTGAN ε=50,0.0,210784
+113766,,correct,synthetic,5,DP-CTGAN ε=50,0.0,211318
+142150,,false,synthetic,5,DP-CTGAN ε=50,0.0,211318
+198857,,correct,synthetic,1,WGAN-GP,0.0,211571
+24175,,false,synthetic,1,WGAN-GP,0.0,211571
+198955,,correct,synthetic,2,WGAN-GP,0.0,211426
+22618,,false,synthetic,2,WGAN-GP,0.0,211426
+198021,,correct,synthetic,3,WGAN-GP,0.0,211131
+23593,,false,synthetic,3,WGAN-GP,0.0,211131
+196423,,correct,synthetic,4,WGAN-GP,0.0,210784
+25257,,false,synthetic,4,WGAN-GP,0.0,210784
+200087,,correct,synthetic,5,WGAN-GP,0.0,211318
+22467,,false,synthetic,5,WGAN-GP,0.0,211318
+195250,,correct,synthetic,1,CVAE-GMM,0.0,211571
+28677,,false,synthetic,1,CVAE-GMM,0.0,211571
+193352,,correct,synthetic,3,CVAE-GMM,0.0,211131
+30259,,false,synthetic,3,CVAE-GMM,0.0,211131
+202626,,correct,synthetic,2,CVAE-GMM,0.0,211426
+22068,,false,synthetic,2,CVAE-GMM,0.0,211426
+200317,,correct,synthetic,4,CVAE-GMM,0.0,210784
+23170,,false,synthetic,4,CVAE-GMM,0.0,210784
+201052,,correct,synthetic,5,CVAE-GMM,0.0,211318
+24196,,false,synthetic,5,CVAE-GMM,0.0,211318
+203360,,correct,synthetic,2,EMB-Diffusion,0.0,211426
+15345,,false,synthetic,2,EMB-Diffusion,0.0,211426
+203243,,correct,synthetic,1,EMB-Diffusion,0.0,211571
+14752,,false,synthetic,1,EMB-Diffusion,0.0,211571
+202219,,correct,synthetic,3,EMB-Diffusion,0.0,211131
+16910,,false,synthetic,3,EMB-Diffusion,0.0,211131
+199945,,correct,synthetic,4,EMB-Diffusion,0.0,210784
+17462,,false,synthetic,4,EMB-Diffusion,0.0,210784
+198875,,correct,synthetic,5,EMB-Diffusion,0.0,211318
+20129,,false,synthetic,5,EMB-Diffusion,0.0,211318
+168397,,correct,synthetic,3,NMF,0.0,211131
+25278,,false,synthetic,3,NMF,0.0,211131
+164874,,correct,synthetic,1,NMF,0.0,211571
+27994,,false,synthetic,1,NMF,0.0,211571
+164211,,correct,synthetic,2,NMF,0.0,211426
+28715,,false,synthetic,2,NMF,0.0,211426
+165623,,correct,synthetic,4,NMF,0.0,210784
+27597,,false,synthetic,4,NMF,0.0,210784
+164708,,correct,synthetic,5,NMF,0.0,211318
+28420,,false,synthetic,5,NMF,0.0,211318
+99512,,correct,synthetic,4,P-NMF,0.0,210784
+113306,,false,synthetic,4,P-NMF,0.0,210784
+99159,,correct,synthetic,2,P-NMF,0.0,211426
+115001,,false,synthetic,2,P-NMF,0.0,211426
+99519,,correct,synthetic,1,P-NMF,0.0,211571
+112440,,false,synthetic,1,P-NMF,0.0,211571
+99768,,correct,synthetic,3,P-NMF,0.0,211131
+114493,,false,synthetic,3,P-NMF,0.0,211131
+99400,,correct,synthetic,5,P-NMF,0.0,211318
+113666,,false,synthetic,5,P-NMF,0.0,211318
+137849,,correct,synthetic,2,DP-PGM ε=4,0.0,211426
+45022,,false,synthetic,2,DP-PGM ε=4,0.0,211426
+139158,,correct,synthetic,1,DP-PGM ε=4,0.0,211571
+45181,,false,synthetic,1,DP-PGM ε=4,0.0,211571
+139350,,correct,synthetic,3,DP-PGM ε=4,0.0,211131
+45340,,false,synthetic,3,DP-PGM ε=4,0.0,211131
+138015,,correct,synthetic,4,DP-PGM ε=4,0.0,210784
+44894,,false,synthetic,4,DP-PGM ε=4,0.0,210784
+139757,,correct,synthetic,5,DP-PGM ε=4,0.0,211318
+44580,,false,synthetic,5,DP-PGM ε=4,0.0,211318
+25787,,correct,synthetic,3,MVN,0.3,33233
+1082,,false,synthetic,3,MVN,0.3,33233
+25165,,correct,synthetic,4,MVN,0.3,32593
+1038,,false,synthetic,4,MVN,0.3,32593
+25749,,correct,synthetic,5,MVN,0.3,33167
+987,,false,synthetic,5,MVN,0.3,33167
+25833,,correct,synthetic,1,MVN,0.3,33256
+1211,,false,synthetic,1,MVN,0.3,33256
+25301,,correct,synthetic,2,MVN,0.3,33205
+853,,false,synthetic,2,MVN,0.3,33205
+31569,,correct,synthetic,1,CVAE,0.3,33256
+33530,,false,synthetic,1,CVAE,0.3,33256
+31387,,correct,synthetic,2,CVAE,0.3,33205
+33518,,false,synthetic,2,CVAE,0.3,33205
+30875,,correct,synthetic,4,CVAE,0.3,32593
+26515,,false,synthetic,4,CVAE,0.3,32593
+31808,,correct,synthetic,5,CVAE,0.3,33167
+32989,,false,synthetic,5,CVAE,0.3,33167
+31439,,correct,synthetic,3,CVAE,0.3,33233
+32897,,false,synthetic,3,CVAE,0.3,33233
+27621,,correct,synthetic,1,CTGAN,0.3,33256
+115533,,false,synthetic,1,CTGAN,0.3,33256
+26481,,correct,synthetic,3,CTGAN,0.3,33233
+124746,,false,synthetic,3,CTGAN,0.3,33233
+26647,,correct,synthetic,2,CTGAN,0.3,33205
+118765,,false,synthetic,2,CTGAN,0.3,33205
+26079,,correct,synthetic,4,CTGAN,0.3,32593
+111912,,false,synthetic,4,CTGAN,0.3,32593
+25847,,correct,synthetic,5,CTGAN,0.3,33167
+119224,,false,synthetic,5,CTGAN,0.3,33167
+10145,,correct,synthetic,3,DP-CTGAN ε=50,0.3,33233
+136839,,false,synthetic,3,DP-CTGAN ε=50,0.3,33233
+9137,,correct,synthetic,5,DP-CTGAN ε=50,0.3,33167
+121306,,false,synthetic,5,DP-CTGAN ε=50,0.3,33167
+10308,,correct,synthetic,1,DP-CTGAN ε=50,0.3,33256
+137462,,false,synthetic,1,DP-CTGAN ε=50,0.3,33256
+9717,,correct,synthetic,4,DP-CTGAN ε=50,0.3,32593
+132055,,false,synthetic,4,DP-CTGAN ε=50,0.3,32593
+10397,,correct,synthetic,2,DP-CTGAN ε=50,0.3,33205
+129978,,false,synthetic,2,DP-CTGAN ε=50,0.3,33205
+32984,,correct,synthetic,1,WGAN-GP,0.3,33256
+45863,,false,synthetic,1,WGAN-GP,0.3,33256
+32964,,correct,synthetic,2,WGAN-GP,0.3,33205
+42434,,false,synthetic,2,WGAN-GP,0.3,33205
+32956,,correct,synthetic,3,WGAN-GP,0.3,33233
+43065,,false,synthetic,3,WGAN-GP,0.3,33233
+32209,,correct,synthetic,4,WGAN-GP,0.3,32593
+44837,,false,synthetic,4,WGAN-GP,0.3,32593
+32940,,correct,synthetic,5,WGAN-GP,0.3,33167
+40657,,false,synthetic,5,WGAN-GP,0.3,33167
+32220,,correct,synthetic,3,CVAE-GMM,0.3,33233
+52111,,false,synthetic,3,CVAE-GMM,0.3,33233
+32903,,correct,synthetic,5,CVAE-GMM,0.3,33167
+54518,,false,synthetic,5,CVAE-GMM,0.3,33167
+32364,,correct,synthetic,4,CVAE-GMM,0.3,32593
+51787,,false,synthetic,4,CVAE-GMM,0.3,32593
+32662,,correct,synthetic,1,CVAE-GMM,0.3,33256
+55203,,false,synthetic,1,CVAE-GMM,0.3,33256
+33024,,correct,synthetic,2,CVAE-GMM,0.3,33205
+53111,,false,synthetic,2,CVAE-GMM,0.3,33205
+32958,,correct,synthetic,1,EMB-Diffusion,0.3,33256
+21189,,false,synthetic,1,EMB-Diffusion,0.3,33256
+32890,,correct,synthetic,3,EMB-Diffusion,0.3,33233
+26265,,false,synthetic,3,EMB-Diffusion,0.3,33233
+32892,,correct,synthetic,2,EMB-Diffusion,0.3,33205
+24314,,false,synthetic,2,EMB-Diffusion,0.3,33205
+32111,,correct,synthetic,4,EMB-Diffusion,0.3,32593
+23166,,false,synthetic,4,EMB-Diffusion,0.3,32593
+32583,,correct,synthetic,5,EMB-Diffusion,0.3,33167
+28631,,false,synthetic,5,EMB-Diffusion,0.3,33167
+9217,,correct,synthetic,1,NMF,0.3,33256
+537,,false,synthetic,1,NMF,0.3,33256
+9309,,correct,synthetic,2,NMF,0.3,33205
+555,,false,synthetic,2,NMF,0.3,33205
+9282,,correct,synthetic,3,NMF,0.3,33233
+463,,false,synthetic,3,NMF,0.3,33233
+9169,,correct,synthetic,5,NMF,0.3,33167
+536,,false,synthetic,5,NMF,0.3,33167
+9446,,correct,synthetic,4,NMF,0.3,32593
+552,,false,synthetic,4,NMF,0.3,32593
+4543,,correct,synthetic,3,P-NMF,0.3,33233
+47467,,false,synthetic,3,P-NMF,0.3,33233
+4200,,correct,synthetic,4,P-NMF,0.3,32593
+42021,,false,synthetic,4,P-NMF,0.3,32593
+4114,,correct,synthetic,1,P-NMF,0.3,33256
+40232,,false,synthetic,1,P-NMF,0.3,33256
+4446,,correct,synthetic,5,P-NMF,0.3,33167
+44105,,false,synthetic,5,P-NMF,0.3,33167
+4910,,correct,synthetic,2,P-NMF,0.3,33205
+52055,,false,synthetic,2,P-NMF,0.3,33205
+2033,,correct,synthetic,2,DP-PGM ε=4,0.3,33205
+279,,false,synthetic,2,DP-PGM ε=4,0.3,33205
+2434,,correct,synthetic,3,DP-PGM ε=4,0.3,33233
+428,,false,synthetic,3,DP-PGM ε=4,0.3,33233
+1991,,correct,synthetic,5,DP-PGM ε=4,0.3,33167
+314,,false,synthetic,5,DP-PGM ε=4,0.3,33167
+2171,,correct,synthetic,4,DP-PGM ε=4,0.3,32593
+317,,false,synthetic,4,DP-PGM ε=4,0.3,32593
+2465,,correct,synthetic,1,DP-PGM ε=4,0.3,33256
+356,,false,synthetic,1,DP-PGM ε=4,0.3,33256
+2673,,correct,synthetic,1,MVN,0.5,3864
+106,,false,synthetic,1,MVN,0.5,3864
+2636,,correct,synthetic,2,MVN,0.5,3827
+78,,false,synthetic,2,MVN,0.5,3827
+2695,,correct,synthetic,3,MVN,0.5,3846
+79,,false,synthetic,3,MVN,0.5,3846
+2607,,correct,synthetic,4,MVN,0.5,3715
+80,,false,synthetic,4,MVN,0.5,3715
+2649,,correct,synthetic,5,MVN,0.5,3876
+70,,false,synthetic,5,MVN,0.5,3876
+3720,,correct,synthetic,3,CVAE,0.5,3846
+9413,,false,synthetic,3,CVAE,0.5,3846
+3745,,correct,synthetic,1,CVAE,0.5,3864
+9988,,false,synthetic,1,CVAE,0.5,3864
+3689,,correct,synthetic,2,CVAE,0.5,3827
+9450,,false,synthetic,2,CVAE,0.5,3827
+3614,,correct,synthetic,4,CVAE,0.5,3715
+7047,,false,synthetic,4,CVAE,0.5,3715
+3783,,correct,synthetic,5,CVAE,0.5,3876
+9649,,false,synthetic,5,CVAE,0.5,3876
+3513,,correct,synthetic,1,CTGAN,0.5,3864
+78930,,false,synthetic,1,CTGAN,0.5,3864
+3411,,correct,synthetic,2,CTGAN,0.5,3827
+82503,,false,synthetic,2,CTGAN,0.5,3827
+3384,,correct,synthetic,3,CTGAN,0.5,3846
+90268,,false,synthetic,3,CTGAN,0.5,3846
+3352,,correct,synthetic,5,CTGAN,0.5,3876
+83025,,false,synthetic,5,CTGAN,0.5,3876
+3224,,correct,synthetic,4,CTGAN,0.5,3715
+73921,,false,synthetic,4,CTGAN,0.5,3715
+743,,correct,synthetic,5,DP-CTGAN ε=50,0.5,3876
+81505,,false,synthetic,5,DP-CTGAN ε=50,0.5,3876
+751,,correct,synthetic,1,DP-CTGAN ε=50,0.5,3864
+101671,,false,synthetic,1,DP-CTGAN ε=50,0.5,3864
+885,,correct,synthetic,2,DP-CTGAN ε=50,0.5,3827
+95035,,false,synthetic,2,DP-CTGAN ε=50,0.5,3827
+759,,correct,synthetic,3,DP-CTGAN ε=50,0.5,3846
+101833,,false,synthetic,3,DP-CTGAN ε=50,0.5,3846
+789,,correct,synthetic,4,DP-CTGAN ε=50,0.5,3715
+94115,,false,synthetic,4,DP-CTGAN ε=50,0.5,3715
+3813,,correct,synthetic,2,WGAN-GP,0.5,3827
+15233,,false,synthetic,2,WGAN-GP,0.5,3827
+3828,,correct,synthetic,3,WGAN-GP,0.5,3846
+15281,,false,synthetic,3,WGAN-GP,0.5,3846
+3701,,correct,synthetic,4,WGAN-GP,0.5,3715
+16385,,false,synthetic,4,WGAN-GP,0.5,3715
+3861,,correct,synthetic,5,WGAN-GP,0.5,3876
+14030,,false,synthetic,5,WGAN-GP,0.5,3876
+3855,,correct,synthetic,1,WGAN-GP,0.5,3864
+17060,,false,synthetic,1,WGAN-GP,0.5,3864
+3854,,correct,synthetic,5,CVAE-GMM,0.5,3876
+22643,,false,synthetic,5,CVAE-GMM,0.5,3876
+3833,,correct,synthetic,1,CVAE-GMM,0.5,3864
+23345,,false,synthetic,1,CVAE-GMM,0.5,3864
+3756,,correct,synthetic,3,CVAE-GMM,0.5,3846
+20984,,false,synthetic,3,CVAE-GMM,0.5,3846
+3698,,correct,synthetic,4,CVAE-GMM,0.5,3715
+20962,,false,synthetic,4,CVAE-GMM,0.5,3715
+3812,,correct,synthetic,2,CVAE-GMM,0.5,3827
+21700,,false,synthetic,2,CVAE-GMM,0.5,3827
+3818,,correct,synthetic,3,EMB-Diffusion,0.5,3846
+6979,,false,synthetic,3,EMB-Diffusion,0.5,3846
+3682,,correct,synthetic,4,EMB-Diffusion,0.5,3715
+5694,,false,synthetic,4,EMB-Diffusion,0.5,3715
+3834,,correct,synthetic,5,EMB-Diffusion,0.5,3876
+7907,,false,synthetic,5,EMB-Diffusion,0.5,3876
+3792,,correct,synthetic,2,EMB-Diffusion,0.5,3827
+6327,,false,synthetic,2,EMB-Diffusion,0.5,3827
+3828,,correct,synthetic,1,EMB-Diffusion,0.5,3864
+5138,,false,synthetic,1,EMB-Diffusion,0.5,3864
+680,,correct,synthetic,1,NMF,0.5,3864
+3,,false,synthetic,1,NMF,0.5,3864
+682,,correct,synthetic,2,NMF,0.5,3827
+1,,false,synthetic,2,NMF,0.5,3827
+633,,correct,synthetic,3,NMF,0.5,3846
+1,,false,synthetic,3,NMF,0.5,3846
+655,,correct,synthetic,4,NMF,0.5,3715
+3,,false,synthetic,4,NMF,0.5,3715
+730,,correct,synthetic,5,NMF,0.5,3876
+3,,false,synthetic,5,NMF,0.5,3876
+149,,correct,synthetic,2,P-NMF,0.5,3827
+9412,,false,synthetic,2,P-NMF,0.5,3827
+96,,correct,synthetic,1,P-NMF,0.5,3864
+4398,,false,synthetic,1,P-NMF,0.5,3864
+103,,correct,synthetic,5,P-NMF,0.5,3876
+5983,,false,synthetic,5,P-NMF,0.5,3876
+106,,correct,synthetic,3,P-NMF,0.5,3846
+6806,,false,synthetic,3,P-NMF,0.5,3846
+83,,correct,synthetic,4,P-NMF,0.5,3715
+5098,,false,synthetic,4,P-NMF,0.5,3715
