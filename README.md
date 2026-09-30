@@ -16,9 +16,9 @@ This repository holds the code and documentation for the [Health Privacy Challen
 
 ## Challenge tracks 
 The challenge ran two tracks (full details on the edition branches):
-- **[Track I — Bulk RNA-seq]()**. A Blue Team 🫐 vs Red Team 🍅 scheme. Blue teams build privacy-preserving generative methods for bulk gene expression; red teams run membership-inference attacks against the baselines and blue-team solutions to test their privacy robustness.
+- **[Track I — Bulk RNA-seq](https://github.com/PMBio/Health-Privacy-Challenge/tree/camda-2026/experiments/track_i)**. A Blue Team 🫐 vs Red Team 🍅 scheme. Blue teams build privacy-preserving generative methods for bulk gene expression; red teams run membership-inference attacks against the baselines and blue-team solutions to test their privacy robustness.
 
-- **[Track II — Single-cell RNA-seq]()**. Privacy and utility of synthetic scRNA-seq data in a multi-sample donor setting: building generative methods, proposing suitable evaluation metrics, and revealing privacy risks. 
+- **[Track II — Single-cell RNA-seq](https://github.com/PMBio/Health-Privacy-Challenge/tree/camda-2026/experiments/track_ii)**. Privacy and utility of synthetic scRNA-seq data in a multi-sample donor setting: building generative methods, proposing suitable evaluation metrics, and revealing privacy risks. 
 
 
 ## Paper 
@@ -87,13 +87,13 @@ dataset by pointing at the relevant config.
 ```bash
 # 1. data prep (per dataset)
 python src/prepare/fetch_data.py                                   # pull + verify + extract from Zenodo
-python src/prepare/split_data.py --config workflows/config_brca.yaml       # folds + MIA membership labels
-python src/prepare/split_data.py --config workflows/config_combined.yaml
+python src/prepare/split_data.py --config submit_jobs/config_brca.yaml       # folds + MIA membership labels
+python src/prepare/split_data.py --config submit_jobs/config_combined.yaml
  
 
 # 2. generate synthetic data (SLURM job arrays, per dataset)
-bash submit/submit_generators.sh workflows/config_brca.yaml
-bash submit/submit_generators.sh workflows/config_combined.yaml
+bash submit_jobs/submit_generators.sh submit_jobs/config_brca.yaml
+bash submit_jobs_submit_generators.sh submit_jobs/config_combined.yaml
  
 
 ```
