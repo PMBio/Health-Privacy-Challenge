@@ -2,11 +2,12 @@
 __pycache__/
 *.py[cod]
 *$py.class
-*.csv
 _* 
+*.pkl
 
 # data directory
 data/raw/
+data/experimental/
 data/red_team_test*/
 data/meta/
 data/processed/
@@ -27,7 +28,6 @@ src/prepare_data/
 src/generators/utils/prepare_data_master.py
 notebooks/*
 paper/figures/
-paper/results/run*
 downloads/
 
 # C extensions
