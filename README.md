@@ -55,15 +55,15 @@ Reproduce the baseline generative methods and evaluation with [v1.0-paper]({{ li
 
 
 
-## Data
+### Paper Datasets
  
  We re-distribute pre-processed versions of two open-access TCGA RNA-seq datasets, available through the  [GDC portal](https://gdc.cancer.gov); use follows the [NIH Data
 Access Policy](https://gdc.cancer.gov/access-data/data-access-policies) and TCGA citation guidelines.
 
-- **Preprocessed data:** Zenodo [10.5281/zenodo.22996320](https://doi.org/10.5281/zenodo.22996320) — open access.
+- **Preprocessed data:** Zenodo [10.5281/zenodo.22996320](https://doi.org/10.5281/zenodo.22996320).
 - Datasets are also available for download in [ELSA Benchmarks  Platform](https://benchmarks.elsa-ai.eu/?ch=8&com=introduction) after registration.
 
-## Reproducing the paper
+### Reproducing the paper
  
 
 **Figures only.** The paper's results are frozen in
