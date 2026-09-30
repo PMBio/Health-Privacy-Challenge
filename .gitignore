@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 _* 
 *.pkl
+*.csv
 
 # data directory
 data/raw/
