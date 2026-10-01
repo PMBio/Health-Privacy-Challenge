@@ -85,7 +85,7 @@ conda activate health-privacy-env
 Each dataset has its own config (`config_brca.yaml`, `config_combined.yaml`); run the steps once per
 dataset by pointing at the relevant config.
 
-> > **Important:** Update the `home` path under `dir_list` in the configuration YAML file. By default, it is set to `~/Health-Privacy-Challenge`.
+> **Important:** Update the `home` path under `dir_list` in the configuration YAML file. By default, it is set to `~/Health-Privacy-Challenge`.
 
 
 
