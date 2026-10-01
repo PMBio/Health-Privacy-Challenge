@@ -2,7 +2,7 @@
 
 This repository holds the code and documentation for the [Health Privacy Challenge](https://benchmarks.elsa-ai.eu/?ch=8), run within [CAMDA/ISMB Conference](https://bipress.boku.ac.at/camda2026/) in 2025 and 2026, and its accompanying paper. The  Health Privacy Challenge is organized in the context of the European Lighthouse on Safe and Secure AI (ELSA, https://elsa-ai.eu). 
 
-**Active edition:** None. The 2026 challenge is concluded in July, 2026. 
+**Active edition:** None. The 2026 challenge is concluded in July, 2026.
 
 <!-- When a new edition opens, replace the line above with, e.g.:
      **Active edition:** running in 2027 → see the [`2027`](link) branch. -->
@@ -28,7 +28,7 @@ The **2025 Blue Team submissions** are the generative methods under analysis in 
 **Participant methods included** (code archived by the authors; cite their DOIs):
 | Method | Authors | DOI |
 |--------|---------|-----|
-| DP-PGM | Pentyala et al. 2026 | [Github](https://github.com/sikhapentyala/Health-Privacy-Challenge/tree/main/submission) |
+| DP-PGM | Pentyala et al. 2026 | [zenodo.23068244](https://doi.org/10.5281/zenodo.23068244) |
 | Embedded-Diffusion | Kreuer. 2026 | [zenodo.22693680]( https://doi.org/10.5281/zenodo.22693680) |
 | NMF / P-NMF | Wicks. 2026 | [zenodo.22818979](https://doi.org/10.5281/zenodo.22818979 ) |
 
@@ -67,7 +67,7 @@ dataset by pointing at the relevant config.
 ```bash
 # 1. data prep (per dataset)
 python src/prepare/fetch_data.py                            # pull + verify + extract from Zenodo
-python src/prepare/split_data.py --config submit_jobs/config-brca.yaml       # folds + MIA membership labels
+python src/prepare/split_data.py --config submit_jobs/config-brca.yaml  # folds + MIA membership labels
 python src/prepare/split_data.py --config submit_jobs/config-combined.yaml
  
 
