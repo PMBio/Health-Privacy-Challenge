@@ -46,9 +46,9 @@ The paper also introduces additional metrics beyond the challenge scoring. Repro
  We re-distribute pre-processed versions of two open-access bulk TCGA RNA-seq datasets, available through the  [GDC portal](https://gdc.cancer.gov); use follows the [NIH Data
 Access Policy](https://gdc.cancer.gov/access-data/data-access-policies) and TCGA citation guidelines.
 
-- **TCGA-BRCA RNA-Seq.** suitable for cancer subtype prediction (5 subtypes); 1089 x 978 (individuals x [landmark genes](data/f1000_lm_ensembl.tsv)). 
+- **TCGA-BRCA.** suitable for cancer subtype prediction (5 subtypes); 1089 x 978 (individuals x [landmark genes](data/f1000_lm_ensembl.tsv)). 
 
-- **TCGA-COMBINED RNA-Seq.** suitable for cancer type prediction (10 tissues / 12 projects); 4323 x 978 (individuals x [landmark genes](data/f1000_lm_ensembl.tsv)).
+- **TCGA-COMBINED.** suitable for cancer type prediction (10 tissues / 12 projects); 4323 x 978 (individuals x [landmark genes](data/f1000_lm_ensembl.tsv)).
 
 
 
