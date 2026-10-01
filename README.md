@@ -38,6 +38,10 @@ The paper also introduces additional metrics beyond the challenge scoring. Repro
 
 
 ## Datasets
+
+- **Preprocessed data:** available at [zenodo.22996320](https://doi.org/10.5281/zenodo.22996320).
+- Also available at [ELSA Benchmarks  Platform](https://benchmarks.elsa-ai.eu/?ch=8&com=introduction) after registration.
+- All benchmark materials are collected in the [Zenodo challenge community](https://zenodo.org/communities/health-privacy-challenge-2025/records).
  
  We re-distribute pre-processed versions of two open-access bulk TCGA RNA-seq datasets, available through the  [GDC portal](https://gdc.cancer.gov); use follows the [NIH Data
 Access Policy](https://gdc.cancer.gov/access-data/data-access-policies) and TCGA citation guidelines.
@@ -46,8 +50,6 @@ Access Policy](https://gdc.cancer.gov/access-data/data-access-policies) and TCGA
 
 - **TCGA-COMBINED RNA-Seq.** suitable for cancer type prediction (10 tissues / 12 projects); 4323 x 978 (individuals x [landmark genes](data/f1000_lm_ensembl.tsv)).
 
-- **Preprocessed data:** available at [zenodo.22996320](https://doi.org/10.5281/zenodo.22996320).
-- Datasets are also available for download in [ELSA Benchmarks  Platform](https://benchmarks.elsa-ai.eu/?ch=8&com=introduction) after registration.
 
 
 ## Reproducing the paper
