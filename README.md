@@ -39,10 +39,14 @@ The paper also introduces additional metrics beyond the challenge scoring. Repro
 
 ## Datasets
  
- We re-distribute pre-processed versions of two open-access TCGA RNA-seq datasets, available through the  [GDC portal](https://gdc.cancer.gov); use follows the [NIH Data
+ We re-distribute pre-processed versions of two open-access bulk TCGA RNA-seq datasets, available through the  [GDC portal](https://gdc.cancer.gov); use follows the [NIH Data
 Access Policy](https://gdc.cancer.gov/access-data/data-access-policies) and TCGA citation guidelines.
 
-- **Preprocessed data:** Zenodo [10.5281/zenodo.22996320](https://doi.org/10.5281/zenodo.22996320).
+- **TCGA-BRCA RNA-Seq.** suitable for cancer subtype prediction (5 subtypes); 1089 x 978 (individuals x [landmark genes](data/f1000_lm_ensembl.tsv)). 
+
+- **TCGA-COMBINED RNA-Seq.** suitable for cancer type prediction (10 tissues / 12 projects); 4323 x 978 (individuals x [landmark genes](data/f1000_lm_ensembl.tsv)).
+
+- **Preprocessed data:** available at [zenodo.22996320](https://doi.org/10.5281/zenodo.22996320).
 - Datasets are also available for download in [ELSA Benchmarks  Platform](https://benchmarks.elsa-ai.eu/?ch=8&com=introduction) after registration.
 
 
