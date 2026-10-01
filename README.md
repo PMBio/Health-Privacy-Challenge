@@ -66,8 +66,27 @@ Access Policy](https://gdc.cancer.gov/access-data/data-access-policies) and TCGA
 methods and evaluation (including baseline MIA), then compile the results in the notebook. This assumes 
 the code runs on SLURM cluster (Use GPU for training if available). 
 
+
+**Activate the environment**
+
+Create the Conda environment using the provided YAML file:
+
+```bash
+conda env create -f environment.yaml
+```
+
+Then activate it:
+
+```bash
+conda activate health-privacy-env
+```
+
+
 Each dataset has its own config (`config_brca.yaml`, `config_combined.yaml`); run the steps once per
 dataset by pointing at the relevant config.
+
+> > **Important:** Update the `home` path under `dir_list` in the configuration YAML file. By default, it is set to `~/Health-Privacy-Challenge`.
+
 
 
 ```bash
