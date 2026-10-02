@@ -1,4 +1,4 @@
-# Full pipeline (cluster)
+# Cluster pipeline instructions
 
 Regenerate the benchmark results from scratch: data preperation, synthetic data generation and evaluation. 
 Generation and evaluation run as **SLURM job arrays**; the R stages need **R 4.3.2**. 
@@ -9,9 +9,12 @@ Each dataset has its own config (`config_brca.yaml`, `config_combined.yaml`). Ru
 > Read [Environment setup](#environment-setup) first. Several scripts require updates
 > to paths and module names. 
 
+
+## Running pipeline 
+
 ```bash
 # 0. install and activate the environment
-micromamba create --file environment.yml && micromamba activate health-privacy-env
+micromamba create --file environment.yaml && micromamba activate health-privacy-env
 
 # 1. data prep (per dataset)
 python src/prepare/fetch_data.py                                       # pull + verify + extract from Zenodo
@@ -41,10 +44,10 @@ Several things in these scripts and configs are specific to the original setup a
 be pointed at your own before the pipeline will run:
  
 1. **`home` path in the configs.** Every script resolves paths against `dir_list.home`
-   in the config YAMLs (default `~/Health-Privacy-Challenge`). Set it to your path before running, in both `config_brca.yaml` and `config_combined.yaml`.
+   in the config YAMLs (default `~/Health-Privacy-Challenge`). Set it to your path before running, in both [`config-brca.yaml`](config-brca.yaml) and [`config_combined.yaml`](config-combined.yaml).
 
 
-2. **Environment activation.** The scripts source `activate_env.sh`, which hardcodes a
+2. **Environment activation.** The scripts source [`activate_env.sh`](activate_env.sh), which hardcodes a
    micromamba binary and env name. Point it at yours by editing `MAMBA_EXE` / `ENV_NAME`. 
 
 3. **`module load` in the R scripts.** `run_de.sh`, `run_coexpr.sh`, and
@@ -66,3 +69,5 @@ be pointed at your own before the pipeline will run:
 
 - **TCGA-COMBINED, MIA step:** pass `--reference_file <..._reference.tsv>` to the MIA
   call (see the comment in `run_mia.sh`). TGCA-BRCA does not have a reference file, therefore, cannot use it. 
+
+- **DP-CTGAN:** If you'd like to generate data using DP-CTGAN, please use [`dpctgan_environment.yaml`](../dpctgan_environment.yaml) during `submit_generators.sh` stage. 

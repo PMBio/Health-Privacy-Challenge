@@ -59,7 +59,7 @@ Access Policy](https://gdc.cancer.gov/access-data/data-access-policies) and TCGA
  
 ```bash
 #  install and activate the environment
-micromamba create --file environment.yml && micromamba activate health-privacy-env
+micromamba create --file environment.yaml && micromamba activate health-privacy-env
 #  then open paper/paper_figures.ipynb and run all cells
 ```
  
