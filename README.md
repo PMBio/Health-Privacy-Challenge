@@ -72,6 +72,7 @@ dataset by pointing at the relevant config.
 > **Important:** Update the `home` path under `dir_list` in the configuration YAML files. By default, it is set to `~/Health-Privacy-Challenge`.
 
 
+
 ```bash
 # 0. install and activate the environment
 micromamba create --file environment.yml && micromamba activate health-privacy-env
