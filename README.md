@@ -34,7 +34,7 @@ The **2025 Blue Team submissions** are the generative methods under analysis in 
 
 Follow their instructions for model training and generation. 
 
-The paper also introduces additional metrics beyond the challenge scoring. Reproduce the baseline generative methods and evaluation with [v1.0-paper]() (Track I, Blue team). 
+The paper also introduces additional metrics beyond the challenge scoring. Reproduce the baseline generative methods and evaluation with [v1.0-paper](https://github.com/PMBio/Health-Privacy-Challenge/releases/tag/v1.0-paper) (Track I, Blue team). 
 
 
 ## Datasets
@@ -77,7 +77,7 @@ This code-base evolved with the challenges and its accompaniying paper. Each edi
 |--------|------------------|--------|
 | 2025 | [`challenge-2025`](https://github.com/PMBio/Health-Privacy-Challenge/releases/tag/v2025) | [`camda-2025`](https://github.com/PMBio/Health-Privacy-Challenge/tree/camda-2025) |
 | 2026 | [`challenge-2026`](https://github.com/PMBio/Health-Privacy-Challenge/releases/tag/v2026) | [`camda-2026`](https://github.com/PMBio/Health-Privacy-Challenge/tree/camda-2026) |
-| Paper | [`v1.0-paper`]() | `main` |
+| Paper | [`v1.0-paper`](https://github.com/PMBio/Health-Privacy-Challenge/releases/tag/v1.0-paper) | `main` |
  
 
  ## Citation
