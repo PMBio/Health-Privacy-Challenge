@@ -18,20 +18,18 @@ micromamba create --file environment.yaml && micromamba activate health-privacy-
 
 # 1. data prep (per dataset)
 python src/prepare/fetch_data.py                                       # pull + verify + extract from Zenodo
-python src/prepare/split_data.py --config workflows/config_brca.yaml   # folds + MIA membership labels
-python src/prepare/split_data.py --config workflows/config_combined.yaml
+python src/prepare/split_data.py --config submit_jobs/config-brca.yaml   # folds + MIA membership labels
+python src/prepare/split_data.py --config submit_jobs/config-combined.yaml
 
 # 2. generate synthetic data (per dataset)
-bash submit/submit_generators.sh workflows/config_brca.yaml
-bash submit/submit_generators.sh workflows/config_combined.yaml
+bash submit_jobs/submit_generators.sh submit_jobs/config-brca.yaml
+bash submit_jobs/submit_generators.sh submit_jobs/config-combined.yaml
 
 # 3. score — run AFTER generation completes (each stage walks the generated tree)
-bash submit/submit_eval.sh workflows/config_brca.yaml    # evaluator + fan-in combine
-bash submit/submit_mia.sh  workflows/config_brca.yaml    # membership-inference attacks
-bash submit/submit_bio.sh  workflows/config_brca.yaml    # DE + pathway + coexpression (R)
+bash submit_jobs/submit_eval.sh submit_jobs/config-brca.yaml    # evaluator + fan-in combine
+bash submit_jobs/submit_mia.sh  submit_jobs/config-brca.yaml    # membership-inference attacks
+bash submit_jobs/submit_bio.sh  submit_jobs/config-brca.yaml    # DE + pathway + coexpression (R)
 
-# 4. compile results for the figure notebook
-{{ python src/paper/compile_results.py }}
 ```
 
 The dataset is selected by which config you pass; the scripts read all paths,
