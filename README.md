@@ -58,36 +58,18 @@ Access Policy](https://gdc.cancer.gov/access-data/data-access-policies) and TCGA
 `paper/results/` and the `paper_figures.ipynb` regenerates tables and figures from them:
  
 ```bash
+#  install and activate the environment
 micromamba create --file environment.yml && micromamba activate health-privacy-env
-#   open paper/paper_figures.ipynb and run all cells
+#  then open paper/paper_figures.ipynb and run all cells
 ```
-
  
 **Regenerate from the scratch (cluster version).** Prepare the data, run the generative
 methods and evaluation (including baseline MIA), then compile the results in the notebook. This assumes 
 the code runs on SLURM cluster (Use GPU for training if available). 
 
-
-**Activate the environment**
-
-Create the Conda environment using the provided YAML file:
-
-```bash
-conda env create -f environment.yaml
-```
-
-Then activate it:
-
-```bash
-conda activate health-privacy-env
-```
-
-
 Each dataset has its own config (`config_brca.yaml`, `config_combined.yaml`); run the steps once per
 dataset by pointing at the relevant config.
-
-> **Important:** Update the `home` path under `dir_list` in the configuration YAML file. By default, it is set to `~/Health-Privacy-Challenge`.
-
+> **Important:** Update the `home` path under `dir_list` in the configuration YAML files. By default, it is set to `~/Health-Privacy-Challenge`.
 
 
 ```bash
@@ -111,6 +93,9 @@ bash submit_jobs/submit_bio.sh  submit_jobs/config-brca.yaml    # DE, co-expr, p
 ```
  
  > [!NOTE]
+> - **Environment activation:** the cluster scripts source `submit_jobs/activate_env.sh`,
+>   which hardcodes the original setup (a micromamba binary and env name). Point it at
+>   your own — edit `MAMBA_EXE` / `ENV_NAME` at the top of that file.
 > - **TCGA-COMBINED, MIA step:** pass `--reference_file <..._reference.tsv>` to the MIA
 >   call (see the comment in `submit_jobs/run_mia.sh`). BRCA does not use it.
 > - **R stages (DE, coexpression, pathway)** run under **R 4.3.2**. Install the CRAN /
