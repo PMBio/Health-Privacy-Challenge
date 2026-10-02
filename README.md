@@ -58,6 +58,7 @@ Access Policy](https://gdc.cancer.gov/access-data/data-access-policies) and TCGA
 `paper/results/` and the `paper_figures.ipynb` regenerates tables and figures from them:
  
 ```bash
+micromamba create --file environment.yml && micromamba activate health-privacy-env
 #   open paper/paper_figures.ipynb and run all cells
 ```
 
@@ -90,6 +91,9 @@ dataset by pointing at the relevant config.
 
 
 ```bash
+# 0. install and activate the environment
+micromamba create --file environment.yml && micromamba activate health-privacy-env
+
 # 1. data prep (per dataset)
 python src/prepare/fetch_data.py                            # pull + verify + extract from Zenodo
 python src/prepare/split_data.py --config submit_jobs/config-brca.yaml  # folds + MIA membership labels
