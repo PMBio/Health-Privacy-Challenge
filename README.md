@@ -63,48 +63,12 @@ micromamba create --file environment.yml && micromamba activate health-privacy-e
 #  then open paper/paper_figures.ipynb and run all cells
 ```
  
-**Regenerate from the scratch (cluster version).** Prepare the data, run the generative
-methods and evaluation (including baseline MIA), then compile the results in the notebook. This assumes 
+**Regenerate from the scratch (cluster version).** Regenerating the results from scratch: prepare the data, run the generative methods and evaluate (including baseline MIA). This assumes 
 the code runs on SLURM cluster (Use GPU for training if available). 
 
-Each dataset has its own config (`config_brca.yaml`, `config_combined.yaml`); run the steps once per
-dataset by pointing at the relevant config.
-> **Important:** Update the `home` path under `dir_list` in the configuration YAML files. By default, it is set to `~/Health-Privacy-Challenge`.
+See [`submit_jobs/README.md`](submit_jobs/README.md) for the
+step-by-step commands and the adjustments you'll need to make for your own cluster.
 
-
-
-```bash
-# 0. install and activate the environment
-micromamba create --file environment.yml && micromamba activate health-privacy-env
-
-# 1. data prep (per dataset)
-python src/prepare/fetch_data.py                            # pull + verify + extract from Zenodo
-python src/prepare/split_data.py --config submit_jobs/config-brca.yaml  # folds + MIA membership labels
-python src/prepare/split_data.py --config submit_jobs/config-combined.yaml
- 
-
-# 2. generate synthetic data (SLURM job arrays, per dataset)
-bash submit_jobs/submit_generators.sh submit_jobs/config-brca.yaml
- 
-# 3. evaluate synthetic (SLURM job arrays, per dataset) — run after generation completes
-bash submit_jobs/submit_eval.sh submit_jobs/config-brca.yaml   # fidelity + utility 
-bash submit_jobs/submit_mia.sh  submit_jobs/config-brca.yaml    # MIA
-bash submit_jobs/submit_bio.sh  submit_jobs/config-brca.yaml    # DE, co-expr, pathway
-
-```
- 
- > [!NOTE]
-> - **Environment activation:** the cluster scripts source `submit_jobs/activate_env.sh`,
->   which hardcodes the original setup (a micromamba binary and env name). Point it at
->   your own — edit `MAMBA_EXE` / `ENV_NAME` at the top of that file.
-> - **TCGA-COMBINED, MIA step:** pass `--reference_file <..._reference.tsv>` to the MIA
->   call (see the comment in `submit_jobs/run_mia.sh`). BRCA does not use it.
-> - **R stages (DE, coexpression, pathway)** run under **R 4.3.2**. Install the CRAN /
->   Bioconductor packages with `Rscript env_R.R`. Coexpression
->   requires [hcocena](https://github.com/MarieOestreich/hCoCena) — install it by
->   following repository's own instructions.
-
- 
 ## Editions
 
 This code-base evolved with the challenges and its accompaniying paper. Each edition is frozen as a release and  mirrored as a branch for browsing.
